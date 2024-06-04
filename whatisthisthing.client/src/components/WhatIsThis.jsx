@@ -16,32 +16,40 @@ function WhatIsThis() {
             reader.onload = async (e) => {
                 setPhoto(e.target.result);
 
-                try {
-                    setLoading(true);
+                // Get user location
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const { latitude, longitude } = position.coords;
 
-                    const response = await fetch('https://localhost:7145/identify', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ image: e.target.result })
-                    });
+                    try {
+                        setLoading(true);
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        const response = await fetch('/api/identify', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                image: e.target.result,
+                                location: { latitude, longitude }
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+
+                        // Handle the response
+                        const { identifiedItem, relatedItems } = data.data;
+                        setIdentifiedItem(identifiedItem);
+                        setRelatedItems(relatedItems);
+                    } catch (error) {
+                        console.error('Error identifying the item:', error);
+                    } finally {
+                        setLoading(false);
                     }
-
-                    const data = await response.json();
-
-                    // Handle the response
-                    const { identifiedItem, relatedItems } = data.data;
-                    setIdentifiedItem(identifiedItem);
-                    setRelatedItems(relatedItems);
-                } catch (error) {
-                    console.error('Error identifying the item:', error);
-                } finally {
-                    setLoading(false);
-                }
+                });
             };
             reader.readAsDataURL(file);
         }
@@ -57,7 +65,7 @@ function WhatIsThis() {
         <div style={{ padding: '20px' }}>
             <h2>What is this?</h2>
             <p>Upload a photo of the mysterious hardware you want to identify.</p>
-            <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+            <input type="file" accept="image/*;capture=camera" onChange={handlePhotoUpload} />
             {loading && <p>Loading...</p>}
             {photo && !loading && <img src={photo} alt="Uploaded" style={{ width: '100%', maxWidth: '400px', marginTop: '20px' }} />}
 
