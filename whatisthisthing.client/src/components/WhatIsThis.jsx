@@ -87,16 +87,21 @@ function WhatIsThis() {
             {loading && <p>Loading...</p>}
             {photo && !loading && <img src={photo} alt="Uploaded" style={{ width: '100%', maxWidth: '400px', marginTop: '20px' }} />}
 
-            {identifiedItem && <Item item={{ ...identifiedItem, title: 'Identified Item' }} addToCart={addToCart} />}
+            {identifiedItem && <Item item={{ ...identifiedItem }} addToCart={addToCart} />}
+
+            
+
             {relatedItems.length > 0 && (
-                <div style={{ marginTop: '20px' }}>
+                <>
                     <h3>Related Items</h3>
+                    <div className="card-group">
                     {relatedItems.map((item, index) => (
-                        <div key={index} style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
-                            <Item item={{ ...item, title: 'Related Item' }} addToCart={addToCart} />
-                        </div>
+                        
+                        <Item key={index} item={{ ...item, title: 'Related Item' }} addToCart={addToCart} />
+
                     ))}
-                </div>
+                    </div>
+                </>
             )}
 
             {cart.length > 0 && (
