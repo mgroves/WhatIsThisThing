@@ -14,46 +14,64 @@ function WhatIsThis() {
         if (file) {
             const reader = new FileReader();
             reader.onload = async (e) => {
-                setPhoto(e.target.result);
+                const originalImage = new Image();
+                originalImage.src = e.target.result;
 
-                // Get user location
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const { latitude, longitude } = position.coords;
+                originalImage.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    const maxWidth = 640;
 
-                    try {
-                        setLoading(true);
+                    const ratio = maxWidth / originalImage.width;
+                    canvas.width = maxWidth;
+                    canvas.height = originalImage.height * ratio;
 
-                        const response = await fetch('/api/identify', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                image: e.target.result,
-                                location: { latitude, longitude }
-                            })
-                        });
+                    context.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
 
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
+                    const resizedImageDataUrl = canvas.toDataURL();
+
+                    setPhoto(resizedImageDataUrl);
+
+                    // Get user location
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const { latitude, longitude } = position.coords;
+
+                        try {
+                            setLoading(true);
+
+                            const response = await fetch('/api/identify', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    image: resizedImageDataUrl,
+                                    location: { latitude, longitude }
+                                })
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+
+                            const data = await response.json();
+
+                            // Handle the response
+                            const { identifiedItem, relatedItems } = data.data;
+                            setIdentifiedItem(identifiedItem);
+                            setRelatedItems(relatedItems);
+                        } catch (error) {
+                            console.error('Error identifying the item:', error);
+                        } finally {
+                            setLoading(false);
                         }
-
-                        const data = await response.json();
-
-                        // Handle the response
-                        const { identifiedItem, relatedItems } = data.data;
-                        setIdentifiedItem(identifiedItem);
-                        setRelatedItems(relatedItems);
-                    } catch (error) {
-                        console.error('Error identifying the item:', error);
-                    } finally {
-                        setLoading(false);
-                    }
-                });
+                    });
+                };
             };
             reader.readAsDataURL(file);
         }
     };
+
 
 
     const addToCart = (item) => {
