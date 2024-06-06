@@ -1,12 +1,12 @@
 import React from 'react';
 
-function About() {
+function Catalog() {
     return (
         <div className="container">
-            <h2>Browse catalog</h2>
-            <p>Put all stuff here to browse.</p>
+            <h2>Browse Catalog</h2>
+            <p>List all stuff</p>
         </div>
     );
 }
 
-export default About;
+export default Catalog;

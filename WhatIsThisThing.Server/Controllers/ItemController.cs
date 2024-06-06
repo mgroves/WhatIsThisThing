@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using WhatIsThisThing.Server.Models.Response;
 using WhatIsThisThing.Server.Models.Submit;
 using WhatIsThisThing.Server.Services;
 
@@ -9,10 +7,12 @@ namespace WhatIsThisThing.Server.Controllers;
 public class ItemController : Controller
 {
     private readonly IIdentifierService _identifierService;
+    private readonly IDataLayer _dataLayer;
 
-    public ItemController(IIdentifierService identifierService)
+    public ItemController(IIdentifierService identifierService, IDataLayer dataLayer)
     {
         _identifierService = identifierService;
+        _dataLayer = dataLayer;
     }
     
     [HttpPost]
@@ -27,5 +27,13 @@ public class ItemController : Controller
         var response = await _identifierService.Identify(request);
 
         return Ok(new { data = response });
+    }
+
+    [HttpGet]
+    [Route("/api/catalog/{page}")]
+    public async Task<IActionResult> Browse(int page)
+    {
+        var items = await _dataLayer.Browse(page);
+        return Ok(new { data = items });
     }
 }

@@ -12,10 +12,12 @@ public interface IDataLayer
 {
     Task<List<Item>> FindItemsByVector(float[] embedding, Location requestLocation);
     Task<List<Store>> FindNearbyStores(Location requestLocation);
+    Task<List<Item>> Browse(int page);
 }
 
 public class DataLayer : IDataLayer
 {
+    private const int PAGE_SIZE = 6;
     private readonly IBucketProvider _bucketProvider;
 
     public DataLayer(IBucketProvider bucketProvider)
@@ -63,5 +65,22 @@ public class DataLayer : IDataLayer
             new Store { Name = "Ferguson Plumbing Supply", Latitude = 40.041899, Longitude = -83.127272}
         };
         return list;
+    }
+
+    public async Task<List<Item>> Browse(int page)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var cluster = bucket.Cluster;
+
+        var sql = @$"
+            SELECT META(t1).id, t1.name, t1.`desc`, t1.image, t1.price
+            FROM whatisthis._default.Items AS t1
+            ORDER BY t1.name
+            LIMIT {PAGE_SIZE}
+            OFFSET {page * PAGE_SIZE}";
+
+        var result = await cluster.QueryAsync<Item>(sql);
+        var rows = result.Rows.AsAsyncEnumerable();
+        return await rows.ToListAsync();
     }
 }

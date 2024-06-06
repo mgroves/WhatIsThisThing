@@ -50,7 +50,7 @@ export default defineConfig({
                 target: 'https://localhost:7145/',
                 secure: false
             },
-            '^/api/identify': {
+            '^/api/.*': {
                 target: 'https://localhost:7145/',
                 secure: false
             }

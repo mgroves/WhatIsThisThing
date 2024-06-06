@@ -1,6 +1,6 @@
 import React from 'react';
 
-function About() {
+function Locations() {
     return (
         <div className="container">
             <h2>Locations</h2>
@@ -9,4 +9,4 @@ function About() {
     );
 }
 
-export default About;
+export default Locations;

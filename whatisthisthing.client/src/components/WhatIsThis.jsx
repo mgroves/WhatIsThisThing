@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Item from './Item';
 
-function WhatIsThis() {
+function WhatIsThis({ addToCart }) {
     const [photo, setPhoto] = useState(null);
     const [identifiedItem, setIdentifiedItem] = useState(null);
     const [relatedItems, setRelatedItems] = useState([]);
@@ -74,10 +74,10 @@ function WhatIsThis() {
 
 
 
-    const addToCart = (item) => {
-        setCart([...cart, item]);
-        setTotal(total + item.price);
-    };
+    //const addToCart = (item) => {
+    //    setCart([...cart, item]);
+    //    setTotal(total + item.price);
+    //};
 
     return (
         <div className="container">

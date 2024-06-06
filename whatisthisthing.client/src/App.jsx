@@ -1,4 +1,5 @@
 ﻿import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { useState } from 'react';
 import Home from './components/Home';
 import About from './components/About';
 import WhatIsThis from './components/WhatIsThis';
@@ -7,6 +8,17 @@ import Locations from './components/Locations';
 import './App.css';
 
 function App() {
+
+    const [cart, setCart] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [numItems, setNumItems] = useState(0);
+
+    const addToCart = (item) => {
+        setCart([...cart, item]);
+        setTotal(total + item.price);
+        setNumItems(numItems + 1);
+    };
+
     return (
         <Router>
             <div>
@@ -34,7 +46,7 @@ function App() {
                                     <Link className="nav-link" to="/locations">Locations</Link>
                                 </li>
                             </ul>
-                            <div className="d-flex">
+                            <div className="dropdown">
                                 <button className="btn btn-outline-secondary position-relative">
                                     <div className="shopping-cart-icon">
                                         🛒
@@ -44,6 +56,9 @@ function App() {
                                             <span className="visually-hidden">items in cart</span>
                                         </span>
                                 </button>
+                                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownCartButton">
+                                    <li><a className="dropdown-item" href="#">Cart is empty</a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -51,8 +66,8 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
-                    <Route path="/whatisthis" element={<WhatIsThis />} />
-                    <Route path="/catalog" element={<Catalog />} />
+                    <Route path="/whatisthis" element={<WhatIsThis addToCart={addToCart} />} />
+                    <Route path="/catalog" element={<Catalog addToCart={addToCart} />} />
                     <Route path="/locations" element={<Locations />} />
                 </Routes>
             </div>

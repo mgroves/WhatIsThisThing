@@ -59,7 +59,7 @@ public class EmbeddingService : IEmbeddingService
                 var getResponseObject = JsonConvert.DeserializeObject<GetApiResponse>(getResponseString);
                 return getResponseObject.Status != "succeeded";
             })
-            .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                 (result, timeSpan, retryCount, context) =>
                 {
                     // Optional: Add logic to handle each retry attempt if needed
