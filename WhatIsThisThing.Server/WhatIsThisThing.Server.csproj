@@ -33,4 +33,13 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
+	<Target Name="BuildReactApp" BeforeTargets="Build">
+		<Exec Command="npm install" WorkingDirectory="..\whatisthisthing.client" />
+		<Exec Command="npm run build" WorkingDirectory="..\whatisthisthing.client" />
+		<ItemGroup>
+			<ReactBuildFiles Include="..\whatisthisthing.client\dist\**\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(ReactBuildFiles)" DestinationFolder="wwwroot\%(RecursiveDir)" />
+	</Target>
+
 </Project>
