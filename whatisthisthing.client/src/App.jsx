@@ -34,6 +34,17 @@ function App() {
                                     <Link className="nav-link" to="/locations">Locations</Link>
                                 </li>
                             </ul>
+                            <div className="d-flex">
+                                <button className="btn btn-outline-secondary position-relative">
+                                    <div className="shopping-cart-icon">
+                                        🛒
+                                    </div>
+                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            0
+                                            <span className="visually-hidden">items in cart</span>
+                                        </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </nav>
