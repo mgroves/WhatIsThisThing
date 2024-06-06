@@ -80,7 +80,7 @@ function WhatIsThis() {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div className="container">
             <h2>What is this?</h2>
             <p>Upload a photo of the mysterious hardware you want to identify.</p>
             <input type="file" accept="image/*;capture=camera" onChange={handlePhotoUpload} />
