@@ -72,13 +72,6 @@ function WhatIsThis({ addToCart }) {
         }
     };
 
-
-
-    //const addToCart = (item) => {
-    //    setCart([...cart, item]);
-    //    setTotal(total + item.price);
-    //};
-
     return (
         <div className="container">
             <h2>What is this?</h2>
