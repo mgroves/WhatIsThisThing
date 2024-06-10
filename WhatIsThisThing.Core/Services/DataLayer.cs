@@ -12,7 +12,6 @@ namespace WhatIsThisThing.Server.Services;
 public interface IDataLayer
 {
     Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, Location requestLocation);
-    Task<List<Store>> FindNearbyStores(Location requestLocation);
     Task<List<Item>> Browse(int page);
 }
 
@@ -61,17 +60,6 @@ public class DataLayer : IDataLayer
         var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
         return await rows.ToListAsync();
-    }
-
-    public async Task<List<Store>> FindNearbyStores(Location requestLocation)
-    {
-        var list = new List<Store>
-        {
-            new Store { Name = "Home Depot Canal Winchester", Latitude = 39.857713, Longitude = -82.831166},
-            new Store { Name = "Commercial Parts and Service", Latitude = 39.984273, Longitude = -83.139559},
-            new Store { Name = "Ferguson Plumbing Supply", Latitude = 40.041899, Longitude = -83.127272}
-        };
-        return list;
     }
 
     public async Task<List<Item>> Browse(int page)
