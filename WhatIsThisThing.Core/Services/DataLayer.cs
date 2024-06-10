@@ -4,13 +4,14 @@ using Couchbase.Management.Collections;
 using Couchbase.Search;
 using Couchbase.Search.Queries.Vector;
 using WhatIsThisThing.Server.Models.Domain;
+using WhatIsThisThing.Server.Models.Response;
 using WhatIsThisThing.Server.Models.Submit;
 
 namespace WhatIsThisThing.Server.Services;
 
 public interface IDataLayer
 {
-    Task<List<Item>> FindItemsByVector(float[] embedding, Location requestLocation);
+    Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, Location requestLocation);
     Task<List<Store>> FindNearbyStores(Location requestLocation);
     Task<List<Item>> Browse(int page);
 }
@@ -25,14 +26,20 @@ public class DataLayer : IDataLayer
         _bucketProvider = bucketProvider;
     }
     
-    public async Task<List<Item>> FindItemsByVector(float[] embedding, Location requestLocation)
+    public async Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, Location requestLocation)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
 
         var sql = @$"
-            SELECT META(t1).id, t1.name, t1.`desc`, t1.image, t1.price, SEARCH_SCORE() AS score
+            WITH stockCte AS (
+	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
+	            FROM whatisthis._default.Stock stock1
+	            JOIN whatisthis._default.Stores store1 ON META(stock1).id LIKE META(store1).id || '%'
+            )
+            SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
             FROM whatisthis._default.Items AS t1
+            NEST stockCte s ON s.itemId = META(t1).id
             WHERE SEARCH(t1,
               {{
                 ""fields"": [""*""],
@@ -51,7 +58,7 @@ public class DataLayer : IDataLayer
             ORDER BY score DESC";
 
 
-        var result = await cluster.QueryAsync<Item>(sql);
+        var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
         return await rows.ToListAsync();
     }

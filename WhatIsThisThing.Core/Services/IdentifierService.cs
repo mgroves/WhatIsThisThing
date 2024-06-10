@@ -27,36 +27,14 @@ public class IdentifierService : IIdentifierService
         var embedding = await _embedding.GetImageEmbedding(request.Image);
         
         // search database
-        var items = await _data.FindItemsByVector(embedding, request.Location);
-
-        // find locations
-        var stores = await _data.FindNearbyStores(request.Location);
-
-        var bestItem = items.First();
-        var relatedItems = items.Skip(1);
+        var items = await _data.FindItemsWithStockByVectorAndLocation(embedding, request.Location);
 
         var result = new IdentifyResponse();
 
-        result.IdentifiedItem = await GetStock(bestItem, stores);
-        result.RelatedItems = (await Task.WhenAll(relatedItems.Select(i => GetStock(i, stores)))).ToList();
+        result.IdentifiedItem = items.First();
+        result.RelatedItems = items.Skip(1).ToList();
         
         return result;
     }
 
-    private async Task<ItemResponse> GetStock(Item bestItem, List<Store> stores)
-    {
-        return new ItemResponse
-        {
-            Desc = bestItem.Desc,
-            Image = bestItem.Image,
-            Name = bestItem.Name,
-            Price = bestItem.Price,
-            Stock = new List<StockAvailabilityResponse>
-            {
-                new StockAvailabilityResponse { Quantity = 5, StoreName = stores[0].Name },
-                new StockAvailabilityResponse { Quantity = 0, StoreName = stores[1].Name },
-                new StockAvailabilityResponse { Quantity = 1, StoreName = stores[2].Name }
-            }
-        };
-    }
 }

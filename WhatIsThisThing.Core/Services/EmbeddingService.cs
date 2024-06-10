@@ -73,23 +73,7 @@ public class EmbeddingService : IEmbeddingService
             return getResponseObject.Output;
         
         // Handle the case where the status is not "succeeded" after all retries
-        throw new Exception("Vector Embedding retrieval operation did not succeed after 5 retries.");
-
-        // int retryCount = 0;
-        // while (retryCount < 3)
-        // {
-        //     var getResponse = await client.GetAsync(url);
-        //     var getResponseString = await getResponse.Content.ReadAsStringAsync();
-        //
-        //     var getResponseObject = JsonConvert.DeserializeObject<GetApiResponse>(getResponseString);
-        //     if (getResponseObject.Status == "succeeded") // will be "processing" until "succeeded"
-        //         return getResponseObject.Output;
-        //
-        //     retryCount++;
-        //     await Task.Delay(500); // wait for a half second before retrying
-        // }
-        //
-        // throw new Exception("Unable to get embedding");
+        throw new Exception("Vector Embedding retrieval operation did not succeed after 3 retries.");
     }
 
     public class GetApiResponse
