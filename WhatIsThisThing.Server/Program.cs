@@ -27,7 +27,7 @@ builder.Services.AddCouchbase(options =>
     options.Password = "password";
 });
 builder.Services.AddTransient<IIdentifierService, IdentifierService>();
-builder.Services.AddTransient<IEmbeddingService, EmbeddingService>();
+builder.Services.AddTransient<IEmbeddingService, AzureEmbeddingService>();
 builder.Services.AddTransient<IDataLayer, DataLayer>();
 
 var app = builder.Build();

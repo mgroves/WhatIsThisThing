@@ -1,34 +1,32 @@
 ﻿using Couchbase;
-using Couchbase.Extensions.DependencyInjection;
 using Couchbase.Management.Collections;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using WhatIsThisThing.Core.Services;
 using WhatIsThisThing.Loader;
-using WhatIsThisThing.Server.Models.Submit;
-using WhatIsThisThing.Server.Services;
 
 Console.WriteLine("Initializing...");
 
 // Set up DI
-var serviceCollection = new ServiceCollection();
-serviceCollection.AddLogging(configure => configure.AddConsole());
-serviceCollection.AddCouchbase(options =>
-{
-    options.ConnectionString = "couchbase://localhost";
-    options.UserName = "Administrator";
-    options.Password = "password";
-});
-serviceCollection.AddTransient<IIdentifierService, IdentifierService>();
-serviceCollection.AddTransient<IEmbeddingService, EmbeddingService>();
-serviceCollection.AddTransient<IDataLayer, DataLayer>(); 
-var serviceProvider = serviceCollection.BuildServiceProvider();
+// var serviceCollection = new ServiceCollection();
+// serviceCollection.AddLogging(configure => configure.AddConsole());
+// serviceCollection.AddCouchbase(options =>
+// {
+//     options.ConnectionString = "couchbase://localhost";
+//     options.UserName = "Administrator";
+//     options.Password = "password";
+// });
+// serviceCollection.AddTransient<IIdentifierService, IdentifierService>();
+// serviceCollection.AddTransient<IEmbeddingService, AzureEmbeddingService>();
+// serviceCollection.AddTransient<IDataLayer, DataLayer>(); 
+// var serviceProvider = serviceCollection.BuildServiceProvider();
+
+var embed = new AzureEmbeddingService();
 
 var cluster = await Cluster.ConnectAsync("couchbase://localhost", options =>
 {
     options.UserName = "Administrator";
     options.Password = "password";
 });
+
 var bucketName = "whatisthis";
 
 var bucket = await cluster.BucketAsync(bucketName);
@@ -57,7 +55,7 @@ Console.WriteLine("Done creating Couchbase collections...");
 // load items if necessary
 Console.WriteLine("Loading demo items...");
 var itemCollection = await bucket.CollectionAsync("Items");
-await ItemLoader.Load(itemCollection);
+await ItemLoader.Load(itemCollection, embed);
 Console.WriteLine("Done loading demo items.");
 
 // load stores

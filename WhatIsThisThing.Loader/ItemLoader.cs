@@ -5,18 +5,17 @@ namespace WhatIsThisThing.Loader
 {
     internal class ItemLoader
     {
-        public static async Task Load(ICouchbaseCollection itemCollection)
+        public static async Task Load(ICouchbaseCollection itemCollection, IEmbeddingService embed)
         {
             var itemsAlreadyExist = await itemCollection.ExistsAsync("item010");
             if (itemsAlreadyExist.Exists)
                 return;
             
             var imagesFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "images");
-            var embed = new EmbeddingService();
 
             var items = new Dictionary<string, dynamic>();
             var base64image =
-                await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "001_reticulated_splines.webp"));
+                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "001_reticulated_splines.webp"));
             items.Add("item001", new
             {
                 Name = "Reticulated Splines",
@@ -26,7 +25,7 @@ namespace WhatIsThisThing.Loader
                 ImageVector = await embed.GetImageEmbedding(base64image)
             });
 
-            base64image = await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "002_flux_capacitor.webp"));
+            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "002_flux_capacitor.webp"));
             items.Add("item002", new
             {
                 Name = "Flux Capacitor",
@@ -36,7 +35,7 @@ namespace WhatIsThisThing.Loader
                 ImageVector = await embed.GetImageEmbedding(base64image)
             });
 
-            base64image = await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "003_thermionic_valve.webp"));
+            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "003_thermionic_valve.webp"));
             items.Add("item003", new
             {
                 Name = "Thermionic Valve",
@@ -46,7 +45,7 @@ namespace WhatIsThisThing.Loader
                 ImageVector = await embed.GetImageEmbedding(base64image)
             });
 
-            base64image = await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "004_gyro_stabilizer.webp"));
+            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "004_gyro_stabilizer.webp"));
             items.Add("item004", new
             {
                 Name = "Gyro Stabilizer",
@@ -57,7 +56,7 @@ namespace WhatIsThisThing.Loader
             });
 
             base64image =
-                await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "005_quantum_tunneling_composite.webp"));
+                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "005_quantum_tunneling_composite.webp"));
             items.Add("item005", new
             {
                 Name = "Quantum Tunneling Composite",
@@ -68,7 +67,7 @@ namespace WhatIsThisThing.Loader
             });
 
             base64image =
-                await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "006_harmonic_resonator.webp"));
+                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "006_harmonic_resonator.webp"));
             items.Add("item006", new
             {
                 Name = "Harmonic Resonator",
@@ -78,7 +77,7 @@ namespace WhatIsThisThing.Loader
                 ImageVector = await embed.GetImageEmbedding(base64image)
             });
 
-            base64image = await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "007_cryogenic_coupler.webp"));
+            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "007_cryogenic_coupler.webp"));
             items.Add("item007", new
             {
                 Name = "Cryogenic Coupler",
@@ -89,7 +88,7 @@ namespace WhatIsThisThing.Loader
             });
 
             base64image =
-                await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "008_photoresist_spinner.webp"));
+                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "008_photoresist_spinner.webp"));
             items.Add("item008", new
             {
                 Name = "Photoresist Spinner",
@@ -99,7 +98,7 @@ namespace WhatIsThisThing.Loader
                 ImageVector = await embed.GetImageEmbedding(base64image)
             });
 
-            base64image = await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "009_plasma_injector.webp"));
+            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "009_plasma_injector.webp"));
             items.Add("item009", new
             {
                 Name = "Plasma Injector",
@@ -110,7 +109,7 @@ namespace WhatIsThisThing.Loader
             });
 
             base64image =
-                await ImageHelper.ImageToBase64(Path.Combine(imagesFolderPath, "010_magnetohydrodynamic_pump.webp"));
+                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "010_magnetohydrodynamic_pump.webp"));
             items.Add("item010", new
             {
                 Name = "Magnetohydrodynamic Pump",

@@ -10,7 +10,7 @@ public interface IEmbeddingService
     Task<float[]> GetImageEmbedding(string requestImage);
 }
 
-public class EmbeddingService : IEmbeddingService
+public class ImagebindEmbeddingService : IEmbeddingService
 {
     private readonly HttpClient _httpClient;
 
@@ -19,7 +19,7 @@ public class EmbeddingService : IEmbeddingService
     private static readonly string _apiKey = "r8_CQ8M7sNDW5Wld7pcADhvBANsFwtw3iF2jZAKX";
     private static readonly string _apiEndpoint = "https://api.replicate.com/v1/predictions";
 
-    public EmbeddingService()
+    public ImagebindEmbeddingService()
     {
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
@@ -59,7 +59,7 @@ public class EmbeddingService : IEmbeddingService
                 var getResponseObject = JsonConvert.DeserializeObject<GetApiResponse>(getResponseString);
                 return getResponseObject.Status != "succeeded";
             })
-            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+            .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                 (result, timeSpan, retryCount, context) =>
                 {
                     // Optional: Add logic to handle each retry attempt if needed
@@ -73,7 +73,7 @@ public class EmbeddingService : IEmbeddingService
             return getResponseObject.Output;
         
         // Handle the case where the status is not "succeeded" after all retries
-        throw new Exception("Vector Embedding retrieval operation did not succeed after 3 retries.");
+        throw new Exception("Vector Embedding retrieval operation did not succeed after 5 retries.");
     }
 
     public class GetApiResponse

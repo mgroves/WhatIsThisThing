@@ -4,7 +4,7 @@ namespace WhatIsThisThing.Loader;
 
 public class ImageHelper
 {
-    public static async Task<string> ImageToBase64(string imagePath)
+    public static async Task<string> ImageToBase64Png(string imagePath)
     {
         if (string.IsNullOrEmpty(imagePath))
         {
