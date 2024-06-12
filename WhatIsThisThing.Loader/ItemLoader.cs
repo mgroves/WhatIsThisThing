@@ -1,128 +1,164 @@
-﻿using Couchbase.KeyValue;
+﻿using System.Runtime.InteropServices.ComTypes;
+using Couchbase.KeyValue;
+using System.Xml.Linq;
 using WhatIsThisThing.Core.Services;
 
 namespace WhatIsThisThing.Loader
 {
     internal class ItemLoader
     {
-        public static async Task Load(ICouchbaseCollection itemCollection, IEmbeddingService embed)
+        private readonly ICouchbaseCollection _itemCollection;
+        private readonly IEmbeddingService _embed;
+
+        public ItemLoader(ICouchbaseCollection itemCollection, IEmbeddingService embed)
         {
-            var itemsAlreadyExist = await itemCollection.ExistsAsync("item010");
-            if (itemsAlreadyExist.Exists)
-                return;
-            
+            _itemCollection = itemCollection;
+            _embed = embed;
+        }
+        
+        public async Task Load()
+        {
             var imagesFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "images");
 
-            var items = new Dictionary<string, dynamic>();
-            var base64image =
-                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "001_reticulated_splines.webp"));
-            items.Add("item001", new
-            {
-                Name = "Reticulated Splines",
-                Desc = "Specialized grooves used in advanced machinery for precise alignment.",
-                Price = 19.99,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item001",
+                name: "Reticulated Splines",
+                desc: "Specialized grooves used in advanced machinery for precise alignment.",
+                price: 19.99,
+                imagePath: Path.Combine(imagesFolderPath, "001_reticulated_splines.webp")
+            );
+            await LoadItem(
+                key: "item002",
+                name: "Flux Capacitor",
+                desc: "A component typically used in high-energy equipment for stabilizing power flow.",
+                price: 1985.55,
+                imagePath: Path.Combine(imagesFolderPath, "001_reticulated_splines.webp")
+            );
 
-            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "002_flux_capacitor.webp"));
-            items.Add("item002", new
-            {
-                Name = "Flux Capacitor",
-                Desc = "A component typically used in high-energy equipment for stabilizing power flow.",
-                Price = 179.97,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+    key: "item003",
+    name: "Thermionic Valve",
+    desc: "An electron tube used in high-frequency applications and radio transmitters.",
+    price: 1.99,
+    imagePath: Path.Combine(imagesFolderPath, "003_thermionic_valve.webp")
+);
 
-            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "003_thermionic_valve.webp"));
-            items.Add("item003", new
-            {
-                Name = "Thermionic Valve",
-                Desc = "An electron tube used in high-frequency applications and radio transmitters.",
-                Price = 1.99,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item004",
+                name: "Gyro Stabilizer",
+                desc: "Device used to maintain balance and stability in moving systems.",
+                price: 3000.18,
+                imagePath: Path.Combine(imagesFolderPath, "004_gyro_stabilizer.webp")
+            );
 
-            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "004_gyro_stabilizer.webp"));
-            items.Add("item004", new
-            {
-                Name = "Gyro Stabilizer",
-                Desc = "Device used to maintain balance and stability in moving systems.",
-                Price = 3000.18,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item005",
+                name: "Quantum Tunneling Composite",
+                desc: "Material that changes electrical resistance under strain, used in advanced sensors.",
+                price: 328.14,
+                imagePath: Path.Combine(imagesFolderPath, "005_quantum_tunneling_composite.webp")
+            );
 
-            base64image =
-                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "005_quantum_tunneling_composite.webp"));
-            items.Add("item005", new
-            {
-                Name = "Quantum Tunneling Composite",
-                Desc = "Material that changes electrical resistance under strain, used in advanced sensors.",
-                Price = 328.14,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item006",
+                name: "Harmonic Resonator",
+                desc: "Component that controls vibration frequencies in precision machinery.",
+                price: 25.00,
+                imagePath: Path.Combine(imagesFolderPath, "006_harmonic_resonator.webp")
+            );
 
-            base64image =
-                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "006_harmonic_resonator.webp"));
-            items.Add("item006", new
-            {
-                Name = "Harmonic Resonator",
-                Desc = "Component that controls vibration frequencies in precision machinery.",
-                Price = 25.00,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item007",
+                name: "Cryogenic Coupler",
+                desc: "Connects cryogenic lines in ultra-low temperature applications.",
+                price: 148.07,
+                imagePath: Path.Combine(imagesFolderPath, "007_cryogenic_coupler.webp")
+            );
 
-            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "007_cryogenic_coupler.webp"));
-            items.Add("item007", new
-            {
-                Name = "Cryogenic Coupler",
-                Desc = "Connects cryogenic lines in ultra-low temperature applications.",
-                Price = 148.07,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item008",
+                name: "Photoresist Spinner",
+                desc: "Equipment part used in semiconductor manufacturing to coat wafers with photoresist.",
+                price: 299.99,
+                imagePath: Path.Combine(imagesFolderPath, "008_photoresist_spinner.webp")
+            );
 
-            base64image =
-                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "008_photoresist_spinner.webp"));
-            items.Add("item008", new
-            {
-                Name = "Photoresist Spinner",
-                Desc = "Equipment part used in semiconductor manufacturing to coat wafers with photoresist.",
-                Price = 299.99,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item009",
+                name: "Plasma Injector",
+                desc: "Device used to introduce plasma into a chamber for materials processing.",
+                price: 399.99,
+                imagePath: Path.Combine(imagesFolderPath, "009_plasma_injector.webp")
+            );
 
-            base64image = await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "009_plasma_injector.webp"));
-            items.Add("item009", new
-            {
-                Name = "Plasma Injector",
-                Desc = "Device used to introduce plasma into a chamber for materials processing.",
-                Price = 399.99,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item010",
+                name: "Magnetohydrodynamic Pump",
+                desc: "Pump that uses magnetic fields to move conductive fluids without mechanical parts.",
+                price: 5400.00,
+                imagePath: Path.Combine(imagesFolderPath, "010_magnetohydrodynamic_pump.webp")
+            );
 
-            base64image =
-                await ImageHelper.ImageToBase64Png(Path.Combine(imagesFolderPath, "010_magnetohydrodynamic_pump.webp"));
-            items.Add("item010", new
-            {
-                Name = "Magnetohydrodynamic Pump",
-                Desc = "Pump that uses magnetic fields to move conductive fluids without mechanical parts.",
-                Price = 5400.00,
-                Image = base64image,
-                ImageVector = await embed.GetImageEmbedding(base64image)
-            });
+            await LoadItem(
+                key: "item011",
+                name: "Optical Isolator",
+                desc: "Device used to prevent back reflection in optical systems, ensuring signal integrity.",
+                price: 75.50,
+                imagePath: Path.Combine(imagesFolderPath, "011_optical_isolator.webp")
+            );
 
-            foreach (var item in items)
+            await LoadItem(
+                key: "item012",
+                name: "Nano-Carbon Actuator",
+                desc: "High-precision actuator used in nanotechnology applications for fine movement control.",
+                price: 450.00,
+                imagePath: Path.Combine(imagesFolderPath, "012_nano_carbon_actuator.webp")
+            );
+
+            await LoadItem(
+                key: "item013",
+                name: "Superconducting Coil",
+                desc: "Coil used in superconducting magnets for generating strong magnetic fields with minimal energy loss.",
+                price: 12000.00,
+                imagePath: Path.Combine(imagesFolderPath, "013_superconducting_coil.webp")
+            );
+
+            await LoadItem(
+                key: "item014",
+                name: "Piezoelectric Transducer",
+                desc: "Device that converts electrical energy into mechanical motion and vice versa, used in sensors and actuators.",
+                price: 89.99,
+                imagePath: Path.Combine(imagesFolderPath, "014_piezoelectric_transducer.webp")
+            );
+
+            await LoadItem(
+                key: "item015",
+                name: "Graphene Membrane",
+                desc: "Ultra-thin, strong, and conductive membrane used in advanced filtration and electronic applications.",
+                price: 299.99,
+                imagePath: Path.Combine(imagesFolderPath, "015_graphene_membrane.webp")
+            );
+
+        }
+
+        private async Task LoadItem(string key, string name, string desc, double price, string imagePath)
+        {
+            var itemExist = await _itemCollection.ExistsAsync(key);
+            if (itemExist.Exists)
+                return;
+            
+            var base64image = await ImageHelper.ImageToBase64Png(imagePath);
+
+            var item = new
             {
-                await itemCollection.UpsertAsync(item.Key, item.Value);
-            }
+                Name = name,
+                Desc = desc,
+                Price = price,
+                Image = base64image,
+                ImageVector = await _embed.GetImageEmbedding(base64image)
+            };
+
+            await _itemCollection.UpsertAsync(key, item);
         }
     }
 }

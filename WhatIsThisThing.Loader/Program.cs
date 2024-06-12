@@ -5,20 +5,6 @@ using WhatIsThisThing.Loader;
 
 Console.WriteLine("Initializing...");
 
-// Set up DI
-// var serviceCollection = new ServiceCollection();
-// serviceCollection.AddLogging(configure => configure.AddConsole());
-// serviceCollection.AddCouchbase(options =>
-// {
-//     options.ConnectionString = "couchbase://localhost";
-//     options.UserName = "Administrator";
-//     options.Password = "password";
-// });
-// serviceCollection.AddTransient<IIdentifierService, IdentifierService>();
-// serviceCollection.AddTransient<IEmbeddingService, AzureEmbeddingService>();
-// serviceCollection.AddTransient<IDataLayer, DataLayer>(); 
-// var serviceProvider = serviceCollection.BuildServiceProvider();
-
 var embed = new AzureEmbeddingService();
 
 var cluster = await Cluster.ConnectAsync("couchbase://localhost", options =>
@@ -55,7 +41,8 @@ Console.WriteLine("Done creating Couchbase collections...");
 // load items if necessary
 Console.WriteLine("Loading demo items...");
 var itemCollection = await bucket.CollectionAsync("Items");
-await ItemLoader.Load(itemCollection, embed);
+var itemLoader = new ItemLoader(itemCollection, embed);
+await itemLoader.Load();
 Console.WriteLine("Done loading demo items.");
 
 // load stores
@@ -67,7 +54,7 @@ Console.WriteLine("Done loading demo stores.");
 // TODO: load stock
 Console.WriteLine("Loading demo stock...");
 var stockCollection = await bucket.CollectionAsync("Stock");
-await StockLoader.Load(stockCollection, maxItems: 10, maxStores: 3);
+await StockLoader.Load(stockCollection, maxItems: 15, maxStores: 3);
 Console.WriteLine("Done loading demo stock.");
 
 // TODO: create vector index?
