@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useId } from 'react';
 import StoreAvailability from './StoreAvailability';
 
 const Item = ({ item = {}, addToCart }) => {
     const { image, name, desc, price, stock = [] } = item;
+    const accordionId = useId();
+
     return (
         <div className="card" style={{ width: '18rem' }}>
             <img className="card-img-top" src={image} alt={name} />
@@ -10,14 +12,14 @@ const Item = ({ item = {}, addToCart }) => {
                 <h5 className="card-title">{name}</h5>
                 <p className="card-text">{desc}</p>
                 <p className="card-text">${price}</p>
-                <div className="accordion">
+                <div className="accordion" id={accordionId}>
                     <div className="accordion-item">
-                        <h2 className="accordion-header">
-                            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        <h2 className="accordion-header" id={`${accordionId}-headingOne`}>
+                            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#${accordionId}-collapseOne`} aria-expanded="true" aria-controls={`${accordionId}-collapseOne`}>
                                 Available Nearby
                             </button>
                         </h2>
-                        <div id="collapseOne" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                        <div id={`${accordionId}-collapseOne`} className="accordion-collapse collapse" aria-labelledby={`${accordionId}-headingOne`} data-bs-parent={`#${accordionId}`}>
                             <div className="accordion-body">
                                 {stock.map((store, index) => (
                                     <StoreAvailability key={index} store={store} />
@@ -26,12 +28,9 @@ const Item = ({ item = {}, addToCart }) => {
                         </div>
                     </div>
                 </div>
-
             </div>
             <div className="card-footer">
-                <small className="text-body-secondary">
-                    <button className="btn btn-success" onClick={() => addToCart(item)}>Add to Cart</button>
-                </small>
+                <button className="btn btn-success" onClick={() => addToCart(item)}>Add to Cart</button>
             </div>
         </div>
     );
