@@ -1,1 +1,16 @@
-﻿
+﻿.cart-link {
+    font-size: 1.5rem;
+    position: relative;
+}
+
+.badge {
+    position: absolute;
+    top: 5;
+    right: -5px;
+    padding: 0.25em 0.5em;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    font-size: 0.75rem;
+    transform: translate(50%, -50%);
+}

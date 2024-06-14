@@ -5,6 +5,7 @@ import About from './components/About';
 import WhatIsThis from './components/WhatIsThis';
 import Catalog from './components/Catalog';
 import Locations from './components/Locations';
+import CartDropdown from './components/CartDropdown';
 import './App.css';
 
 function App() {
@@ -14,10 +15,28 @@ function App() {
     const [numItems, setNumItems] = useState(0);
 
     const addToCart = (item) => {
-        setCart([...cart, item]);
+        const updatedCart = cart.map(cartItem =>
+            cartItem.name === item.name
+                ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                : cartItem
+        );
+
+        if (!updatedCart.find(cartItem => cartItem.name === item.name)) {
+            const { image, ...itemWithoutImage } = item; // Exclude the image property
+            updatedCart.push({ ...itemWithoutImage, quantity: 1 });
+        }
+
+        setCart(updatedCart);
         setTotal(total + item.price);
         setNumItems(numItems + 1);
     };
+
+    const clearCart = () => {
+        setCart([]);
+        setTotal(0);
+        setNumItems(0);
+    };
+
 
     return (
         <Router>
@@ -45,22 +64,10 @@ function App() {
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/locations">Locations</Link>
                                 </li>
+                                <CartDropdown cart={cart} total={total} numItems={numItems} clearCart={clearCart} />
                             </ul>
-                            <div className="dropdown">
-                                <button className="btn btn-outline-secondary position-relative">
-                                    <div className="shopping-cart-icon">
-                                        🛒
-                                    </div>
-                                        <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                            0
-                                            <span className="visually-hidden">items in cart</span>
-                                        </span>
-                                </button>
-                                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownCartButton">
-                                    <li><a className="dropdown-item" href="#">Cart is empty</a></li>
-                                </ul>
-                            </div>
                         </div>
+
                     </div>
                 </nav>
                 <Routes>
