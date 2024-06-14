@@ -12,6 +12,9 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                 <h5 className="card-title">{name}</h5>
                 <p className="card-text">{desc}</p>
                 <p className="card-text">${price}</p>
+
+            </div>
+            <div className="card-footer">
                 <div className="accordion" id={accordionId}>
                     <div className="accordion-item">
                         <h2 className="accordion-header" id={`${accordionId}-headingOne`}>
@@ -21,7 +24,7 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                         </h2>
                         <div id={`${accordionId}-collapseOne`} className="accordion-collapse collapse" aria-labelledby={`${accordionId}-headingOne`} data-bs-parent={`#${accordionId}`}>
                             <div className="accordion-body">
-                                {stock.length === 0 ? ( <p>No locations near you.</p> ) : (
+                                {stock.length === 0 ? (<p>No locations near you.</p>) : (
                                     stock.map((store, index) => (
                                         <StoreAvailability key={index} store={store} />
                                     ))
@@ -30,8 +33,6 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="card-footer">
                 <button className="btn btn-success" onClick={() => addToCart(item)}>Add to Cart</button>
             </div>
         </div>

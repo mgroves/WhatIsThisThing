@@ -76,8 +76,8 @@ function Catalog({ addToCart }) {
                         );
                     }
                 })}
-                {!hasMore && <p>No more items to show</p>}
             </div>
+            {!hasMore && <p>All items displayed.</p>}
         </div>
     );
 }

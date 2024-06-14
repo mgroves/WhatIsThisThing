@@ -129,6 +129,7 @@ public class DataLayer : IDataLayer
             SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
             FROM whatisthis._default.Items AS t1
             LEFT NEST stockCte s ON s.itemId = META(t1).id
+            ORDER BY t1.name
             LIMIT {PAGE_SIZE}
             OFFSET {request.Page * PAGE_SIZE}";
 

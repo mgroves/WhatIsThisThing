@@ -36,12 +36,12 @@ namespace WhatIsThisThing.Loader
             );
 
             await LoadItem(
-    key: "item003",
-    name: "Thermionic Valve",
-    desc: "An electron tube used in high-frequency applications and radio transmitters.",
-    price: 1.99,
-    imagePath: Path.Combine(imagesFolderPath, "003_thermionic_valve.webp")
-);
+                key: "item003",
+                name: "Thermionic Valve",
+                desc: "An electron tube used in high-frequency applications and radio transmitters.",
+                price: 1.99,
+                imagePath: Path.Combine(imagesFolderPath, "003_thermionic_valve.webp")
+            );
 
             await LoadItem(
                 key: "item004",
