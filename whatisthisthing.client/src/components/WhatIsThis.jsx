@@ -78,23 +78,22 @@ function WhatIsThis({ addToCart }) {
             <p>Upload a photo of the mysterious hardware you want to identify.</p>
             <input type="file" accept="image/*;capture=camera" onChange={handlePhotoUpload} />
             {loading && <p>Loading...</p>}
-            {photo && !loading && <img src={photo} alt="Uploaded" style={{ width: '100%', maxWidth: '400px', marginTop: '20px' }} />}
+            {photo && !loading && <img src={photo} alt="Uploaded" style={{ width: '64px', maxWidth: '400px', marginTop: '20px' }} />}
 
-            {identifiedItem && <Item item={{ ...identifiedItem }} addToCart={addToCart} />}
-
-            
-
-            {relatedItems.length > 0 && (
+            {identifiedItem && (
                 <>
-                    <h3>Related Items</h3>
-                    <div className="card-group">
-                    {relatedItems.map((item, index) => (
-                        
-                        <Item key={index} item={{ ...item, title: 'Related Item' }} addToCart={addToCart} />
-
-                    ))}
-                    </div>
+                    <h3>Most likely match:</h3>
+                    <Item item={{ ...identifiedItem }} addToCart={addToCart} />
                 </>
+            )}
+
+            {relatedItems.length > 0 && <h3>Related Items:</h3>}
+            {relatedItems.length > 0 && (
+                <div className="d-flex flex-wrap">
+                    {relatedItems.map((item, index) => (
+                        <Item key={index} item={item} addToCart={addToCart} />
+                    ))}
+                </div>
             )}
 
             {cart.length > 0 && (

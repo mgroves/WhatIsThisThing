@@ -1,12 +1,12 @@
-import React, { useId } from 'react';
+import React, { useId, forwardRef } from 'react';
 import StoreAvailability from './StoreAvailability';
 
-const Item = ({ item = {}, addToCart }) => {
+const Item = forwardRef(({ item = {}, addToCart }, ref) => {
     const { image, name, desc, price, stock = [] } = item;
     const accordionId = useId();
 
     return (
-        <div className="card" style={{ width: '18rem' }}>
+        <div className="card" style={{ width: '18rem' }} ref={ref}>
             <img className="card-img-top" src={image} alt={name} />
             <div className="card-body">
                 <h5 className="card-title">{name}</h5>
@@ -34,6 +34,6 @@ const Item = ({ item = {}, addToCart }) => {
             </div>
         </div>
     );
-};
+});
 
 export default Item;

@@ -34,6 +34,9 @@ function Catalog({ addToCart }) {
             if (entries[0].isIntersecting && hasMore) {
                 setPage(prevPage => prevPage + 1);
             }
+        }, {
+            rootMargin: '100px', // Adjust this value as needed
+            threshold: 0.1 // Adjust this value as needed
         });
         if (node) observer.current.observe(node);
     }, [hasMore]);
@@ -41,24 +44,20 @@ function Catalog({ addToCart }) {
     return (
         <div className="container">
             <h2>Browse Catalog</h2>
-            <div className="card-group">
-            {items.map((item, index) => {
-                if (index === items.length - 1) {
-                    return (
-                        <div ref={lastItemRef} key={index} className="item">
-                            <Item item={item} addToCart={addToCart} />
-                        </div>
-                    );
-                } else {
-                    return (
-                        <div key={index} className="item">
-                            <Item item={item} addToCart={addToCart} />
-                        </div>
-                    );
-                }
-            })}
+            <div className="d-flex flex-wrap">
+                {items.map((item, index) => {
+                    if (index === items.length - 1) {
+                        return (
+                            <Item key={index} item={item} addToCart={addToCart} ref={lastItemRef} />
+                        );
+                    } else {
+                        return (
+                            <Item key={index} item={item} addToCart={addToCart} />
+                        );
+                    }
+                })}
+                {!hasMore && <p>No more items to show</p>}
             </div>
-            {!hasMore && <p>No more items to show</p>}
         </div>
     );
 }
