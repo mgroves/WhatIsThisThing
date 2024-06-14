@@ -30,10 +30,10 @@ public class ItemController : Controller
     }
 
     [HttpGet]
-    [Route("/api/catalog/{page}")]
-    public async Task<IActionResult> Browse(int page)
+    [Route("api/catalog")]
+    public async Task<IActionResult> Browse([FromQuery] BrowseRequest request)
     {
-        var items = await _dataLayer.Browse(page);
+        var items = await _dataLayer.Browse(request);
         return Ok(new { data = items });
     }
 }

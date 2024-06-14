@@ -21,9 +21,11 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                         </h2>
                         <div id={`${accordionId}-collapseOne`} className="accordion-collapse collapse" aria-labelledby={`${accordionId}-headingOne`} data-bs-parent={`#${accordionId}`}>
                             <div className="accordion-body">
-                                {stock.map((store, index) => (
-                                    <StoreAvailability key={index} store={store} />
-                                ))}
+                                {stock.length === 0 ? ( <p>No locations near you.</p> ) : (
+                                    stock.map((store, index) => (
+                                        <StoreAvailability key={index} store={store} />
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>

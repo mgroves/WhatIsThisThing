@@ -54,7 +54,7 @@ Console.WriteLine("Done loading demo stores.");
 // TODO: load stock
 Console.WriteLine("Loading demo stock...");
 var stockCollection = await bucket.CollectionAsync("Stock");
-await StockLoader.Load(stockCollection, maxItems: 15, maxStores: 3);
+await StockLoader.Load(stockCollection, maxItems: 15, maxStores: 6);
 Console.WriteLine("Done loading demo stock.");
 
 // TODO: create vector index?

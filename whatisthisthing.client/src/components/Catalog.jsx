@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Item from './Item';
 
+const fetchItems = async (page, location) => {
+    try {
+        const { latitude, longitude } = location;
+        const response = await fetch(`/api/catalog?Page=${page}&Latitude=${latitude}&Longitude=${longitude}`);
+        const result = await response.json();
+        return result.data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return [];
+    }
+};
+
 function Catalog({ addToCart }) {
     const [items, setItems] = useState([]);
     const [page, setPage] = useState(0);
@@ -8,24 +20,32 @@ function Catalog({ addToCart }) {
     const observer = useRef();
 
     useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const response = await fetch(`/api/catalog/${page}`);
-                const result = await response.json();
-                setItems(prevItems => {
-                    const newItems = result.data.filter(item => !prevItems.some(existingItem => existingItem.name === item.name));
-                    return [...prevItems, ...newItems];
-                });
-                if (result.data.length === 0) {
+        const fetchAndSetItems = async () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const location = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    const newItems = await fetchItems(page, location);
+                    setItems(prevItems => {
+                        const filteredItems = newItems.filter(item => !prevItems.some(existingItem => existingItem.name === item.name));
+                        return [...prevItems, ...filteredItems];
+                    });
+                    if (newItems.length === 0) {
+                        setHasMore(false);
+                    }
+                }, (error) => {
+                    console.error("Error getting location:", error);
                     setHasMore(false);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
                 setHasMore(false);
             }
         };
 
-        fetchItems();
+        fetchAndSetItems();
     }, [page]);
 
     const lastItemRef = useCallback(node => {

@@ -1,8 +1,4 @@
-﻿using Couchbase;
-using Couchbase.Extensions.DependencyInjection;
-using Couchbase.Management.Collections;
-using Couchbase.Search;
-using Couchbase.Search.Queries.Vector;
+﻿using Couchbase.Extensions.DependencyInjection;
 using WhatIsThisThing.Server.Models.Domain;
 using WhatIsThisThing.Server.Models.Response;
 using WhatIsThisThing.Server.Models.Submit;
@@ -12,12 +8,13 @@ namespace WhatIsThisThing.Server.Services;
 public interface IDataLayer
 {
     Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, Location requestLocation);
-    Task<List<Item>> Browse(int page);
+    Task<List<ItemResponse>> Browse(BrowseRequest request);
 }
 
 public class DataLayer : IDataLayer
 {
     private const int PAGE_SIZE = 6;
+    private const string RADIUS = "15mi";
     private readonly IBucketProvider _bucketProvider;
 
     public DataLayer(IBucketProvider bucketProvider)
@@ -31,14 +28,42 @@ public class DataLayer : IDataLayer
         var cluster = bucket.Cluster;
 
         var sql = @$"
-            WITH stockCte AS (
+            WITH closestStores AS (
+                SELECT x.name, META(x).id AS id
+                FROM whatisthis._default.Stores x
+                WHERE SEARCH(x, {{
+                 ""fields"": [""*""],
+                 ""query"" : {{
+                   ""location"" : {{
+                     ""lat"" : {requestLocation.Latitude},
+                     ""lon"" : {requestLocation.Longitude}
+                   }},
+                   ""distance"" : ""{RADIUS}"",
+                   ""field"" : ""geo""
+                 }}, 
+                 ""sort"": [
+                  {{
+                   ""by"": ""geo_distance"",
+                   ""field"": ""geo"",
+                   ""unit"": ""mi"",
+                   ""location"" : {{
+                     ""lat"" : {requestLocation.Latitude},
+                     ""lon"" : {requestLocation.Longitude}
+                   }}
+                  }}
+                 ]
+	            }})
+
+	            LIMIT 3
+            ),
+            stockCte AS (
 	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
 	            FROM whatisthis._default.Stock stock1
-	            JOIN whatisthis._default.Stores store1 ON META(stock1).id LIKE META(store1).id || '%'
+	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
             )
             SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
             FROM whatisthis._default.Items AS t1
-            NEST stockCte s ON s.itemId = META(t1).id
+            LEFT NEST stockCte s ON s.itemId = META(t1).id
             WHERE SEARCH(t1,
               {{
                 ""fields"": [""*""],
@@ -62,19 +87,52 @@ public class DataLayer : IDataLayer
         return await rows.ToListAsync();
     }
 
-    public async Task<List<Item>> Browse(int page)
+    public async Task<List<ItemResponse>> Browse(BrowseRequest request)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
 
         var sql = @$"
-            SELECT META(t1).id, t1.name, t1.`desc`, t1.image, t1.price
-            FROM whatisthis._default.Items AS t1
-            ORDER BY t1.name
-            LIMIT {PAGE_SIZE}
-            OFFSET {page * PAGE_SIZE}";
+            WITH closestStores AS (
+                SELECT x.name, META(x).id AS id
+                FROM whatisthis._default.Stores x
+                WHERE SEARCH(x, {{
+                 ""fields"": [""*""],
+                 ""query"" : {{
+                   ""location"" : {{
+                     ""lat"" : {request.Latitude},
+                     ""lon"" : {request.Longitude}
+                   }},
+                   ""distance"" : ""{RADIUS}"",
+                   ""field"" : ""geo""
+                 }}, 
+                 ""sort"": [
+                  {{
+                   ""by"": ""geo_distance"",
+                   ""field"": ""geo"",
+                   ""unit"": ""mi"",
+                   ""location"" : {{
+                     ""lat"" : {request.Latitude},
+                     ""lon"" : {request.Longitude}
+                   }}
+                  }}
+                 ]
+	            }})
 
-        var result = await cluster.QueryAsync<Item>(sql);
+	            LIMIT 3
+            ),
+            stockCte AS (
+	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
+	            FROM whatisthis._default.Stock stock1
+	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
+            )
+            SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
+            FROM whatisthis._default.Items AS t1
+            LEFT NEST stockCte s ON s.itemId = META(t1).id
+            LIMIT {PAGE_SIZE}
+            OFFSET {request.Page * PAGE_SIZE}";
+
+        var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
         return await rows.ToListAsync();
     }
