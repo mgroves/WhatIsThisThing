@@ -62,8 +62,11 @@ function Catalog({ addToCart }) {
     }, [hasMore]);
 
     return (
-        <div className="container">
-            <h2>Browse Catalog</h2>
+        <div className="container mt-5">
+            <div className="text-center">
+                <h2 className="display-4">Browse Catalog</h2>
+                <p>Check out the entire catalog of items currently stored in Couchbase.</p>
+            </div>
             <div className="d-flex flex-wrap">
                 {items.map((item, index) => {
                     if (index === items.length - 1) {

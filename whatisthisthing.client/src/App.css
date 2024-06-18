@@ -14,3 +14,28 @@
     font-size: 0.75rem;
     transform: translate(50%, -50%);
 }
+
+.text-shadow {
+    text-shadow: 1px 1px 2px black, 0 0 25px black, 0 0 5px black;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background-color: #28a745;
+    }
+
+    50% {
+        transform: scale(1.1);
+        background-color: #28a745;
+    }
+
+    100% {
+        transform: scale(1);
+        background-color: #28a745;
+    }
+}
+
+.btn-success.added-to-cart {
+    animation: pulse 0.3s ease-in-out;
+}

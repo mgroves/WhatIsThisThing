@@ -1,9 +1,10 @@
-import React, { useId, forwardRef } from 'react';
+import React, { useId, forwardRef, useState } from 'react';
 import StoreAvailability from './StoreAvailability';
 
 const Item = forwardRef(({ item = {}, addToCart }, ref) => {
     const { image, name, desc, price, stock = [], score } = item;
     const accordionId = useId();
+    const [addedToCart, setAddedToCart] = useState(false);
 
     const getProgressBarColor = (score) => {
         if (score > 0.005) return 'bg-success'; // great match (green)
@@ -12,15 +13,21 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
     };
 
     const getScorePercentage = (score) => {
-        // Use an adjusted logarithmic scale for normalization
         const logScore = Math.log10(score + 1); // Adding 1 to avoid log(0)
         const adjustedScore = (logScore / Math.log10(0.01 + 1)) * 100; // Normalizing against the maximum expected score
-
         return Math.min(adjustedScore + 20, 100); // Boost for progress bar
     };
 
     const progressBarColor = getProgressBarColor(score);
     const scorePercentage = getScorePercentage(score);
+
+    const handleAddToCart = () => {
+        addToCart(item);
+        setAddedToCart(true);
+        setTimeout(() => {
+            setAddedToCart(false);
+        }, 300); // duration of the animation
+    };
 
     return (
         <div className="card" style={{ width: '18rem' }} ref={ref}>
@@ -35,9 +42,9 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                                 <span style={{ position: 'absolute', width: '100%', color: '#000', textAlign: 'center' }}>{score}</span>
                             </div>
                         </div>
-                        <p className="card-text">${price}</p>
                     </>
                 )}
+                <p className="card-text">${price}</p>
             </div>
             <div className="card-footer">
                 <div className="accordion" id={accordionId}>
@@ -58,7 +65,12 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                         </div>
                     </div>
                 </div>
-                <button className="btn btn-success" onClick={() => addToCart(item)}>Add to Cart</button>
+                <button
+                    className={`btn btn-success ${addedToCart ? 'added-to-cart' : ''}`}
+                    onClick={handleAddToCart}
+                >
+                    Add to Cart
+                </button>
             </div>
         </div>
     );

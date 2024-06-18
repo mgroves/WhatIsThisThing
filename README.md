@@ -80,12 +80,12 @@ The shared backend configuration is stored in `appsettings.json` within the `Wha
 ## Usage
 
 ### What Is This Thing?
-- Upload a picture to identify the item (and other similar-looking items)
+- Upload a picture to identify the item (and other similar-looking items).
 - Get item details including price, description, and nearby stores that have the item in stock.
 
 ### Browse Page
 - View the entire catalog.
-- (Coming soon) Filter items based on reviews and find where to buy them.
+- (Coming soon) Filter items based on review scores.
 
 ## License
 

@@ -1,7 +1,6 @@
 ﻿import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { useState } from 'react';
 import Home from './components/Home';
-import About from './components/About';
 import WhatIsThis from './components/WhatIsThis';
 import Catalog from './components/Catalog';
 import Locations from './components/Locations';
@@ -53,9 +52,6 @@ function App() {
                                     <Link className="nav-link" to="/">Home</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/about">About</Link>
-                                </li>
-                                <li className="nav-item">
                                     <Link className="nav-link" to="/whatisthis">What is this thing?</Link>
                                 </li>
                                 <li className="nav-item">
@@ -72,7 +68,6 @@ function App() {
                 </nav>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
                     <Route path="/whatisthis" element={<WhatIsThis addToCart={addToCart} />} />
                     <Route path="/catalog" element={<Catalog addToCart={addToCart} />} />
                     <Route path="/locations" element={<Locations />} />
