@@ -1,0 +1,25 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "Couchbase": {
+    "ConnectionString": "couchbase://localhost",
+    "Username": "Administrator",
+    "Password": "password",
+    "BucketName": "whatisthis",
+    "ScopeName": "_default"
+  },
+  "AzureComputerVision": {
+    "Endpoint": "https://<subdomain here>.cognitiveservices.azure.com/computervision/",
+    "SubscriptionKey": "<key>"
+  },
+  "Imagebind": {
+    "//": "Not currently in use, this section is not required",
+    "Version": "<replicate model version>",
+    "ApiKey": "<replicate api key>",
+    "Endpoint": "https://api.replicate.com/v1/predictions"
+  }
+}
