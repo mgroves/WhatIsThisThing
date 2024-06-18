@@ -7,9 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIsThisThing.Server", "W
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "whatisthisthing.client", "whatisthisthing.client\whatisthisthing.client.esproj", "{D46DBA8E-BD18-40B6-B213-5CD9F359100C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIsThisThing.Loader", "WhatIsThisThing.Loader\WhatIsThisThing.Loader.csproj", "{0D7AFD95-6388-4CFF-974F-BB959D38160C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIsThisThing.Loader", "WhatIsThisThing.Loader\WhatIsThisThing.Loader.csproj", "{0D7AFD95-6388-4CFF-974F-BB959D38160C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIsThisThing.Core", "WhatIsThisThing.Core\WhatIsThisThing.Core.csproj", "{04903144-0CF4-423D-96DA-E578E175F5DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIsThisThing.Core", "WhatIsThisThing.Core\WhatIsThisThing.Core.csproj", "{04903144-0CF4-423D-96DA-E578E175F5DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7863F6A2-808D-4B01-9B18-D98AAFA1FA61}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
