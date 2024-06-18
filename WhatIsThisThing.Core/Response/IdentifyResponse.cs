@@ -13,6 +13,7 @@ public class ItemResponse
     public decimal Price { get; set; }
     public string Image { get; set; }
     public List<StockAvailabilityResponse> Stock { get; set; }
+    public double Score { get; set; }
 }
 
 public class StockAvailabilityResponse
