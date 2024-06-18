@@ -16,14 +16,7 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
         const logScore = Math.log10(score + 1); // Adding 1 to avoid log(0)
         const adjustedScore = (logScore / Math.log10(0.01 + 1)) * 100; // Normalizing against the maximum expected score
 
-        // Adjusting the scaling to ensure better fill for yellow and red
-        if (score > 0.005) {
-            return Math.min(adjustedScore + 20, 100); // Boost for green matches
-        } else if (score > 0.0005) {
-            return Math.min(adjustedScore * 20, 100); // Boost for yellow matches
-        } else {
-            return Math.min(adjustedScore * 20, 100); // Boost for red matches
-        }
+        return Math.min(adjustedScore + 20, 100); // Boost for progress bar
     };
 
     const roundScore = (score) => {
@@ -41,7 +34,7 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                 <h5 className="card-title">{name}</h5>
                 <p className="card-text">{desc} ({roundedScore})</p>
                 <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow={scorePercentage} aria-valuemin="0" aria-valuemax="100">
-                    <div className={`progress-bar ${progressBarColor}`} style={{ width: `${scorePercentage}%`, position: 'relative' }}>
+                    <div className={`progress-bar overflow-visible text-dark ${progressBarColor}`} style={{ width: `${scorePercentage}%`, position: 'relative' }}>
                         <span style={{ position: 'absolute', width: '100%', color: '#000', textAlign: 'center' }}>{score}</span>
                     </div>
                 </div>
