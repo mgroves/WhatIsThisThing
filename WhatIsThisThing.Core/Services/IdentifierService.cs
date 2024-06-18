@@ -1,5 +1,4 @@
 ﻿using WhatIsThisThing.Core.Services;
-using WhatIsThisThing.Server.Models.Domain;
 using WhatIsThisThing.Server.Models.Response;
 using WhatIsThisThing.Server.Models.Submit;
 

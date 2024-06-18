@@ -5,8 +5,6 @@ using WhatIsThisThing.Loader;
 
 Console.WriteLine("Initializing...");
 
-var embed = new AzureEmbeddingService();
-
 var cluster = await Cluster.ConnectAsync("couchbase://localhost", options =>
 {
     options.UserName = "Administrator";
@@ -14,11 +12,28 @@ var cluster = await Cluster.ConnectAsync("couchbase://localhost", options =>
 });
 
 var bucketName = "whatisthis";
+var scopeName = "_default";
 
 var bucket = await cluster.BucketAsync(bucketName);
 var collectionManager = bucket.Collections;
 
 Console.WriteLine("Done initializing.");
+
+Console.WriteLine("Creating Couchbase scope (if necessary)...");
+
+if (scopeName != "_default")
+{
+    try
+    {
+        await collectionManager.CreateScopeAsync(scopeName);
+    }
+    catch (ScopeExistsException)
+    {
+        // it's fine if scope already exists
+    }
+}
+
+Console.WriteLine("Done creating Couchbase scope.");
 
 Console.WriteLine("Creating Couchbase collections...");
 
@@ -26,9 +41,9 @@ Console.WriteLine("Creating Couchbase collections...");
 var defaultCollectionSettings = new CreateCollectionSettings();
 try
 {
-    await collectionManager.CreateCollectionAsync("_default", "Items", defaultCollectionSettings);
-    await collectionManager.CreateCollectionAsync("_default", "Stock", defaultCollectionSettings);
-    await collectionManager.CreateCollectionAsync("_default", "Stores", defaultCollectionSettings);
+    await collectionManager.CreateCollectionAsync(scopeName, "Items", defaultCollectionSettings);
+    await collectionManager.CreateCollectionAsync(scopeName, "Stock", defaultCollectionSettings);
+    await collectionManager.CreateCollectionAsync(scopeName, "Stores", defaultCollectionSettings);
 }
 catch (CollectionExistsException)
 {
@@ -36,7 +51,9 @@ catch (CollectionExistsException)
 }
 Console.WriteLine("Done creating Couchbase collections...");
 
-// TODO: load initial demo data
+// ******** load initial demo data
+
+IEmbeddingService embed = new AzureEmbeddingService();
 
 // load items if necessary
 Console.WriteLine("Loading demo items...");
@@ -51,7 +68,7 @@ var storeCollection = await bucket.CollectionAsync("Stores");
 await StoreLoader.Load(storeCollection);
 Console.WriteLine("Done loading demo stores.");
 
-// TODO: load stock
+// load stock
 Console.WriteLine("Loading demo stock...");
 var stockCollection = await bucket.CollectionAsync("Stock");
 await StockLoader.Load(stockCollection, maxItems: 15, maxStores: 6);
