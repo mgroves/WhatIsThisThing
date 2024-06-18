@@ -1,16 +1,26 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 
 namespace WhatIsThisThing.Core.Services;
 
 public class AzureEmbeddingService : IEmbeddingService
 {
+    private readonly IOptions<AzureComputerVisionSettings> _settings;
+
+    public AzureEmbeddingService(IOptions<AzureComputerVisionSettings> settings)
+    {
+        _settings = settings;
+    }
+    
     // Free tier: 20 Calls per minute, 5K Calls per month
     // Standard tier: 10 Calls per second, starting $1.00 USD/1000 calls (Estimated)
     public async Task<float[]> GetImageEmbedding(string base64Image)
     {
-        var endpoint = "https://whatisthingthingvision.cognitiveservices.azure.com/computervision/";
-        var subscriptionKey = "aecdfa6849ee4dd6a26d93631c5b4f72";
+        //var endpoint = "https://whatisthingthingvision.cognitiveservices.azure.com/computervision/";
+        var endpoint = _settings.Value.Endpoint;
+        //var subscriptionKey = "aecdfa6849ee4dd6a26d93631c5b4f72";
+        var subscriptionKey = _settings.Value.SubscriptionKey;
 
         using (HttpClient client = new HttpClient())
         {

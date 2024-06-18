@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Polly;
 
 namespace WhatIsThisThing.Core.Services;
@@ -10,19 +11,32 @@ public interface IEmbeddingService
     Task<float[]> GetImageEmbedding(string requestImage);
 }
 
+public class ImagebindSettings
+{
+    public string ApiKey { get; set; }
+    public string Version { get; set; }
+    public string ApiEndpoint { get; set; }
+}
+
 public class ImagebindEmbeddingService : IEmbeddingService
 {
     private readonly HttpClient _httpClient;
+    private readonly string _version;
+    private readonly string _apiEndpoint;
 
     // https://replicate.com/daanelson
-    private static readonly string _version = "0383f62e173dc821ec52663ed22a076d9c970549c209666ac3db181618b7a304";
-    private static readonly string _apiKey = "r8_CQ8M7sNDW5Wld7pcADhvBANsFwtw3iF2jZAKX";
-    private static readonly string _apiEndpoint = "https://api.replicate.com/v1/predictions";
+    // private static readonly string _version = "0383f62e173dc821ec52663ed22a076d9c970549c209666ac3db181618b7a304";
+    // private static readonly string _apiKey = "r8_CQ8M7sNDW5Wld7pcADhvBANsFwtw3iF2jZAKX";
+    // private static readonly string _apiEndpoint = "https://api.replicate.com/v1/predictions";
 
-    public ImagebindEmbeddingService()
+    public ImagebindEmbeddingService(IOptions<ImagebindSettings> settings, HttpClient httpClient)
     {
-        _httpClient = new HttpClient();
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _apiKey);
+        _httpClient = httpClient;
+        var apiKey = settings.Value.ApiKey;
+        _version = settings.Value.Version;
+        _apiEndpoint = settings.Value.ApiEndpoint;
+
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 

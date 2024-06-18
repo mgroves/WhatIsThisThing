@@ -19,26 +19,25 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
         return Math.min(adjustedScore + 20, 100); // Boost for progress bar
     };
 
-    const roundScore = (score) => {
-        return score.toFixed(3); // Adjust the number of decimal places as needed
-    };
-
     const progressBarColor = getProgressBarColor(score);
     const scorePercentage = getScorePercentage(score);
-    const roundedScore = roundScore(score);
 
     return (
         <div className="card" style={{ width: '18rem' }} ref={ref}>
             <img className="card-img-top" src={image} alt={name} />
             <div className="card-body">
                 <h5 className="card-title">{name}</h5>
-                <p className="card-text">{desc} ({roundedScore})</p>
-                <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow={scorePercentage} aria-valuemin="0" aria-valuemax="100">
-                    <div className={`progress-bar overflow-visible text-dark ${progressBarColor}`} style={{ width: `${scorePercentage}%`, position: 'relative' }}>
-                        <span style={{ position: 'absolute', width: '100%', color: '#000', textAlign: 'center' }}>{score}</span>
-                    </div>
-                </div>
-                <p className="card-text">${price}</p>
+                <p className="card-text">{desc}</p>
+                {score !== null && (
+                    <>
+                        <div className="progress" role="progressbar" aria-label="Basic example" aria-valuenow={scorePercentage} aria-valuemin="0" aria-valuemax="100">
+                            <div className={`progress-bar overflow-visible text-dark ${progressBarColor}`} style={{ width: `${scorePercentage}%`, position: 'relative' }}>
+                                <span style={{ position: 'absolute', width: '100%', color: '#000', textAlign: 'center' }}>{score}</span>
+                            </div>
+                        </div>
+                        <p className="card-text">${price}</p>
+                    </>
+                )}
             </div>
             <div className="card-footer">
                 <div className="accordion" id={accordionId}>

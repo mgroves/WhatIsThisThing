@@ -1,20 +1,33 @@
-﻿using Couchbase;
+﻿using Couchbase.Extensions.DependencyInjection;
 using Couchbase.Management.Collections;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using WhatIsThisThing.Core;
 using WhatIsThisThing.Core.Services;
 using WhatIsThisThing.Loader;
 
 Console.WriteLine("Initializing...");
 
-var cluster = await Cluster.ConnectAsync("couchbase://localhost", options =>
-{
-    options.UserName = "Administrator";
-    options.Password = "password";
-});
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureAppConfiguration((context, config) =>
+    {
+        config.AddConfiguration(ConfigurationHelper.GetConfiguration());
+    })
+    .ConfigureServices((context, services) =>
+    {
+        var configuration = context.Configuration;
 
-var bucketName = "whatisthis";
-var scopeName = "_default";
+        services.AddCouchbase(configuration.GetSection("Couchbase"));
+        services.AddTransient<IEmbeddingService, AzureEmbeddingService>();
+    })
+.Build();
 
-var bucket = await cluster.BucketAsync(bucketName);
+var configuration = host.Services.GetRequiredService<IConfiguration>();
+var bucketName = configuration.GetValue<string>("Couchbase:BucketName");
+var scopeName = configuration.GetValue<string>("Couchbase:ScopeName");
+var bucketProvider = host.Services.GetService<IBucketProvider>();
+var bucket = await bucketProvider.GetBucketAsync(bucketName);
 var collectionManager = bucket.Collections;
 
 Console.WriteLine("Done initializing.");
@@ -38,9 +51,9 @@ Console.WriteLine("Done creating Couchbase scope.");
 Console.WriteLine("Creating Couchbase collections...");
 
 // create collections
-var defaultCollectionSettings = new CreateCollectionSettings();
 try
 {
+    var defaultCollectionSettings = new CreateCollectionSettings();
     await collectionManager.CreateCollectionAsync(scopeName, "Items", defaultCollectionSettings);
     await collectionManager.CreateCollectionAsync(scopeName, "Stock", defaultCollectionSettings);
     await collectionManager.CreateCollectionAsync(scopeName, "Stores", defaultCollectionSettings);
@@ -53,7 +66,7 @@ Console.WriteLine("Done creating Couchbase collections...");
 
 // ******** load initial demo data
 
-IEmbeddingService embed = new AzureEmbeddingService();
+IEmbeddingService embed = host.Services.GetService<IEmbeddingService>();
 
 // load items if necessary
 Console.WriteLine("Loading demo items...");
