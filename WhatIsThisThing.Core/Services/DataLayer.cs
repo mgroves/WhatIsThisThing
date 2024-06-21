@@ -7,8 +7,9 @@ namespace WhatIsThisThing.Server.Services;
 
 public interface IDataLayer
 {
-    Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, Location requestLocation);
-    Task<List<ItemResponse>> Browse(BrowseRequest request);
+    Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, GeoCoord requestLocation);
+    Task<List<ItemResponse>> BrowseCatalog(BrowseRequest request);
+    Task<List<Store>> GetStores(LocationsRequest request);
 }
 
 public class DataLayer : IDataLayer
@@ -22,7 +23,7 @@ public class DataLayer : IDataLayer
         _bucketProvider = bucketProvider;
     }
     
-    public async Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, Location requestLocation)
+    public async Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, GeoCoord requestLocation)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
@@ -87,7 +88,7 @@ public class DataLayer : IDataLayer
         return await rows.ToListAsync();
     }
 
-    public async Task<List<ItemResponse>> Browse(BrowseRequest request)
+    public async Task<List<ItemResponse>> BrowseCatalog(BrowseRequest request)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
@@ -134,6 +135,22 @@ public class DataLayer : IDataLayer
             OFFSET {request.Page * PAGE_SIZE}";
 
         var result = await cluster.QueryAsync<ItemResponse>(sql);
+        var rows = result.Rows.AsAsyncEnumerable();
+        return await rows.ToListAsync();
+    }
+
+    public async Task<List<Store>> GetStores(LocationsRequest request)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var cluster = bucket.Cluster;
+
+        var sql = @$"
+            SELECT l.name, l.geo.lat AS Latitude, l.geo.lon AS Longitude
+            FROM whatisthis._default.Stores l
+            LIMIT {PAGE_SIZE} 
+            OFFSET {request.Page * PAGE_SIZE}";
+
+        var result = await cluster.QueryAsync<Store>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
         return await rows.ToListAsync();
     }

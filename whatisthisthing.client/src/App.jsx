@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Home from './components/Home';
 import WhatIsThis from './components/WhatIsThis';
 import Catalog from './components/Catalog';
-import Locations from './components/Locations';
+import Stores from './components/Stores';
 import CartDropdown from './components/CartDropdown';
 import './App.css';
 
@@ -58,7 +58,7 @@ function App() {
                                     <Link className="nav-link" to="/catalog">Browse Catalog</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/locations">Locations</Link>
+                                    <Link className="nav-link" to="/stores">Stores</Link>
                                 </li>
                                 <CartDropdown cart={cart} total={total} numItems={numItems} clearCart={clearCart} />
                             </ul>
@@ -70,7 +70,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/whatisthis" element={<WhatIsThis addToCart={addToCart} />} />
                     <Route path="/catalog" element={<Catalog addToCart={addToCart} />} />
-                    <Route path="/locations" element={<Locations />} />
+                    <Route path="/stores" element={<Stores />} />
                 </Routes>
             </div>
         </Router>

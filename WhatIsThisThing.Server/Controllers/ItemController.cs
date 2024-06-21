@@ -33,7 +33,7 @@ public class ItemController : Controller
     [Route("api/catalog")]
     public async Task<IActionResult> Browse([FromQuery] BrowseRequest request)
     {
-        var items = await _dataLayer.Browse(request);
+        var items = await _dataLayer.BrowseCatalog(request);
         return Ok(new { data = items });
     }
 }

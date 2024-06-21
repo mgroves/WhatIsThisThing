@@ -3,5 +3,5 @@
 public class IdentifyRequest
 {
     public string Image { get; set; }
-    public Location Location { get; set; }
+    public GeoCoord Location { get; set; }
 }

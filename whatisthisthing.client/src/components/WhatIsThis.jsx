@@ -75,7 +75,7 @@ function WhatIsThis({ addToCart }) {
     return (
         <div className="container mt-5">
             <div className="text-center">
-                <h2 className="display-4">What Is This Thing?"</h2>
+                <h2 className="display-4">What Is This Thing?</h2>
                 <p>Upload a photo of the mysterious hardware you want to identify.</p>
             </div>
             <input type="file" accept="image/*;capture=camera" onChange={handlePhotoUpload} />
