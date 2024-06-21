@@ -1,7 +1,6 @@
 using Couchbase.Extensions.DependencyInjection;
 using WhatIsThisThing.Core;
 using WhatIsThisThing.Core.Services;
-using WhatIsThisThing.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

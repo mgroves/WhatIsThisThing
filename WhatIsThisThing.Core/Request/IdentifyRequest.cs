@@ -1,4 +1,6 @@
-﻿namespace WhatIsThisThing.Server.Models.Submit;
+﻿using WhatIsThisThing.Core.Domain;
+
+namespace WhatIsThisThing.Core.Request;
 
 public class IdentifyRequest
 {

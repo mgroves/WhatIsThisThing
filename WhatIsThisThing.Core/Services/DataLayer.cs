@@ -1,9 +1,9 @@
 ﻿using Couchbase.Extensions.DependencyInjection;
-using WhatIsThisThing.Server.Models.Domain;
-using WhatIsThisThing.Server.Models.Response;
-using WhatIsThisThing.Server.Models.Submit;
+using WhatIsThisThing.Core.Domain;
+using WhatIsThisThing.Core.Request;
+using WhatIsThisThing.Core.Response;
 
-namespace WhatIsThisThing.Server.Services;
+namespace WhatIsThisThing.Core.Services;
 
 public interface IDataLayer
 {

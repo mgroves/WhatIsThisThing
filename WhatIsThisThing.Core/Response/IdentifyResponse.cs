@@ -1,4 +1,4 @@
-﻿namespace WhatIsThisThing.Server.Models.Response;
+﻿namespace WhatIsThisThing.Core.Response;
 
 public class IdentifyResponse
 {

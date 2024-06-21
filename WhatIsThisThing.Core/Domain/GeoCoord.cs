@@ -1,4 +1,4 @@
-﻿namespace WhatIsThisThing.Server.Models.Submit;
+﻿namespace WhatIsThisThing.Core.Domain;
 
 public class GeoCoord
 {

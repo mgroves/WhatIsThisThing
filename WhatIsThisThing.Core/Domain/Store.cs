@@ -1,4 +1,4 @@
-﻿namespace WhatIsThisThing.Server.Models.Domain;
+﻿namespace WhatIsThisThing.Core.Domain;
 
 public class Store
 {

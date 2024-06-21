@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WhatIsThisThing.Server.Models.Submit;
-using WhatIsThisThing.Server.Services;
+using WhatIsThisThing.Core.Request;
+using WhatIsThisThing.Core.Services;
 
 namespace WhatIsThisThing.Server.Controllers;
 

@@ -1,8 +1,7 @@
-﻿using WhatIsThisThing.Core.Services;
-using WhatIsThisThing.Server.Models.Response;
-using WhatIsThisThing.Server.Models.Submit;
+﻿using WhatIsThisThing.Core.Request;
+using WhatIsThisThing.Core.Response;
 
-namespace WhatIsThisThing.Server.Services;
+namespace WhatIsThisThing.Core.Services;
 
 public interface IIdentifierService
 {
