@@ -20,6 +20,7 @@ var host = Host.CreateDefaultBuilder(args)
 
         services.AddCouchbase(configuration.GetSection("Couchbase"));
         services.AddTransient<IEmbeddingService, AzureEmbeddingService>();
+        services.Configure<AzureComputerVisionSettings>(configuration.GetSection("AzureComputerVision"));
     })
 .Build();
 

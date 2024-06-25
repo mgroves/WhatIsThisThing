@@ -25,6 +25,7 @@ namespace WhatIsThisThing.Loader
                 name: "Reticulated Splines",
                 desc: "Specialized grooves used in advanced machinery for precise alignment.",
                 price: 19.99,
+                rating: 5,
                 imagePath: Path.Combine(imagesFolderPath, "001_reticulated_splines.webp")
             );
             await LoadItem(
@@ -32,7 +33,8 @@ namespace WhatIsThisThing.Loader
                 name: "Flux Capacitor",
                 desc: "A component typically used in high-energy equipment for stabilizing power flow.",
                 price: 1985.55,
-                imagePath: Path.Combine(imagesFolderPath, "001_reticulated_splines.webp")
+                rating: 5,
+                imagePath: Path.Combine(imagesFolderPath, "002_flux_capacitor.webp")
             );
 
             await LoadItem(
@@ -40,6 +42,7 @@ namespace WhatIsThisThing.Loader
                 name: "Thermionic Valve",
                 desc: "An electron tube used in high-frequency applications and radio transmitters.",
                 price: 1.99,
+                rating: 4,
                 imagePath: Path.Combine(imagesFolderPath, "003_thermionic_valve.webp")
             );
 
@@ -48,6 +51,7 @@ namespace WhatIsThisThing.Loader
                 name: "Gyro Stabilizer",
                 desc: "Device used to maintain balance and stability in moving systems.",
                 price: 3000.18,
+                rating: 4,
                 imagePath: Path.Combine(imagesFolderPath, "004_gyro_stabilizer.webp")
             );
 
@@ -56,6 +60,7 @@ namespace WhatIsThisThing.Loader
                 name: "Quantum Tunneling Composite",
                 desc: "Material that changes electrical resistance under strain, used in advanced sensors.",
                 price: 328.14,
+                rating: 4,
                 imagePath: Path.Combine(imagesFolderPath, "005_quantum_tunneling_composite.webp")
             );
 
@@ -64,6 +69,7 @@ namespace WhatIsThisThing.Loader
                 name: "Harmonic Resonator",
                 desc: "Component that controls vibration frequencies in precision machinery.",
                 price: 25.00,
+                rating: 4,
                 imagePath: Path.Combine(imagesFolderPath, "006_harmonic_resonator.webp")
             );
 
@@ -72,6 +78,7 @@ namespace WhatIsThisThing.Loader
                 name: "Cryogenic Coupler",
                 desc: "Connects cryogenic lines in ultra-low temperature applications.",
                 price: 148.07,
+                rating: 3,
                 imagePath: Path.Combine(imagesFolderPath, "007_cryogenic_coupler.webp")
             );
 
@@ -80,6 +87,7 @@ namespace WhatIsThisThing.Loader
                 name: "Photoresist Spinner",
                 desc: "Equipment part used in semiconductor manufacturing to coat wafers with photoresist.",
                 price: 299.99,
+                rating: 3,
                 imagePath: Path.Combine(imagesFolderPath, "008_photoresist_spinner.webp")
             );
 
@@ -88,6 +96,7 @@ namespace WhatIsThisThing.Loader
                 name: "Plasma Injector",
                 desc: "Device used to introduce plasma into a chamber for materials processing.",
                 price: 399.99,
+                rating: 3,
                 imagePath: Path.Combine(imagesFolderPath, "009_plasma_injector.webp")
             );
 
@@ -96,6 +105,7 @@ namespace WhatIsThisThing.Loader
                 name: "Magnetohydrodynamic Pump",
                 desc: "Pump that uses magnetic fields to move conductive fluids without mechanical parts.",
                 price: 5400.00,
+                rating: 3,
                 imagePath: Path.Combine(imagesFolderPath, "010_magnetohydrodynamic_pump.webp")
             );
 
@@ -104,6 +114,7 @@ namespace WhatIsThisThing.Loader
                 name: "Optical Isolator",
                 desc: "Device used to prevent back reflection in optical systems, ensuring signal integrity.",
                 price: 75.50,
+                rating: 2,
                 imagePath: Path.Combine(imagesFolderPath, "011_optical_isolator.webp")
             );
 
@@ -112,6 +123,7 @@ namespace WhatIsThisThing.Loader
                 name: "Nano-Carbon Actuator",
                 desc: "High-precision actuator used in nanotechnology applications for fine movement control.",
                 price: 450.00,
+                rating: 2,
                 imagePath: Path.Combine(imagesFolderPath, "012_nano_carbon_actuator.webp")
             );
 
@@ -120,6 +132,7 @@ namespace WhatIsThisThing.Loader
                 name: "Superconducting Coil",
                 desc: "Coil used in superconducting magnets for generating strong magnetic fields with minimal energy loss.",
                 price: 12000.00,
+                rating: 2,
                 imagePath: Path.Combine(imagesFolderPath, "013_superconducting_coil.webp")
             );
 
@@ -128,6 +141,7 @@ namespace WhatIsThisThing.Loader
                 name: "Piezoelectric Transducer",
                 desc: "Device that converts electrical energy into mechanical motion and vice versa, used in sensors and actuators.",
                 price: 89.99,
+                rating: 1,
                 imagePath: Path.Combine(imagesFolderPath, "014_piezoelectric_transducer.webp")
             );
 
@@ -136,12 +150,13 @@ namespace WhatIsThisThing.Loader
                 name: "Graphene Membrane",
                 desc: "Ultra-thin, strong, and conductive membrane used in advanced filtration and electronic applications.",
                 price: 299.99,
+                rating: 1,
                 imagePath: Path.Combine(imagesFolderPath, "015_graphene_membrane.webp")
             );
 
         }
 
-        private async Task LoadItem(string key, string name, string desc, double price, string imagePath)
+        private async Task LoadItem(string key, string name, string desc, double price, string imagePath, int rating)
         {
             var itemExist = await _itemCollection.ExistsAsync(key);
             if (itemExist.Exists)
@@ -155,6 +170,7 @@ namespace WhatIsThisThing.Loader
                 Desc = desc,
                 Price = price,
                 Image = base64image,
+                Rating = rating,
                 ImageVector = await _embed.GetImageEmbedding(base64image)
             };
 

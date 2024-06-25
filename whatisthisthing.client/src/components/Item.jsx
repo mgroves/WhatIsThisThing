@@ -1,8 +1,8 @@
-import React, { useId, forwardRef, useState } from 'react';
+﻿import React, { useId, forwardRef, useState } from 'react';
 import StoreAvailability from './StoreAvailability';
 
 const Item = forwardRef(({ item = {}, addToCart }, ref) => {
-    const { image, name, desc, price, stock = [], score } = item;
+    const { image, name, desc, price, stock = [], score, rating } = item;
     const accordionId = useId();
     const [addedToCart, setAddedToCart] = useState(false);
 
@@ -16,6 +16,10 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
         const logScore = Math.log10(score + 1); // Adding 1 to avoid log(0)
         const adjustedScore = (logScore / Math.log10(0.01 + 1)) * 100; // Normalizing against the maximum expected score
         return Math.min(adjustedScore + 20, 100); // Boost for progress bar
+    };
+
+    const renderStars = (rating) => {
+        return "⭐".repeat(rating);
     };
 
     const progressBarColor = getProgressBarColor(score);
@@ -45,6 +49,11 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                     </>
                 )}
                 <p className="card-text">${price}</p>
+                {rating !== null && (
+                    <div className="card-text">
+                        {renderStars(rating)}
+                    </div>
+                )}
             </div>
             <div className="card-footer">
                 <div className="accordion" id={accordionId}>

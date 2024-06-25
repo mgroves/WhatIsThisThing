@@ -14,6 +14,7 @@ public class ItemResponse
     public string Image { get; set; }
     public List<StockAvailabilityResponse> Stock { get; set; }
     public double? Score { get; set; }
+    public int Rating { get; set; }
 }
 
 public class StockAvailabilityResponse

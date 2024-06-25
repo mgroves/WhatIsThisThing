@@ -93,6 +93,7 @@ public class DataLayer : IDataLayer
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
 
+       
         var sql = @$"
             WITH closestStores AS (
                 SELECT x.name, META(x).id AS id
@@ -127,9 +128,13 @@ public class DataLayer : IDataLayer
 	            FROM whatisthis._default.Stock stock1
 	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
             )
-            SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
+            SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, t1.rating, SEARCH_SCORE(t1) AS score
             FROM whatisthis._default.Items AS t1
             LEFT NEST stockCte s ON s.itemId = META(t1).id
+            WHERE 1==1
+                {WhereMinPrice(request)}
+                {WhereMaxPrice(request)}
+                {WhereMinRating(request)}
             ORDER BY t1.name
             LIMIT {PAGE_SIZE}
             OFFSET {request.Page * PAGE_SIZE}";
@@ -137,6 +142,29 @@ public class DataLayer : IDataLayer
         var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
         return await rows.ToListAsync();
+    }
+
+    private string WhereMinRating(BrowseRequest request)
+    {
+        if (!request.MinRating.HasValue)
+            return string.Empty;
+        if (request.MinRating is < 0 or > 5)
+            return string.Empty;
+        return $" AND t1.rating >= {request.MinRating}";
+    }
+
+    private string WhereMaxPrice(BrowseRequest request)
+    {
+        if (!request.MaxPrice.HasValue)
+            return string.Empty;
+        return $" AND t1.price <= {request.MaxPrice} ";
+    }
+
+    private string WhereMinPrice(BrowseRequest request)
+    {
+        if (!request.MinPrice.HasValue)
+            return string.Empty;
+        return $" AND t1.price >= {request.MinPrice} ";
     }
 
     public async Task<List<Store>> GetStores(LocationsRequest request)
