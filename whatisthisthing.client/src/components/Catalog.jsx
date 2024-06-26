@@ -41,11 +41,17 @@ function Catalog({ addToCart }) {
                     };
                     const newItems = await fetchItems(page, location, priceRange, rating);
                     setItems(prevItems => {
-                        const filteredItems = newItems.filter(item => !prevItems.some(existingItem => existingItem.name === item.name));
-                        return [...prevItems, ...filteredItems];
+                        if (page === 0) {
+                            return newItems;
+                        } else {
+                            const filteredItems = newItems.filter(item => !prevItems.some(existingItem => existingItem.name === item.name));
+                            return [...prevItems, ...filteredItems];
+                        }
                     });
                     if (newItems.length === 0) {
                         setHasMore(false);
+                    } else {
+                        setHasMore(true); // Reset hasMore if items are fetched
                     }
                 }, (error) => {
                     console.error("Error getting location:", error);
@@ -81,7 +87,7 @@ function Catalog({ addToCart }) {
 
     const handleRatingChange = (newRating) => {
         setPage(0);
-        setRating(newRating);
+        setRating(newRating || undefined); // Set rating to undefined if newRating is empty
         setItems([]); // Reset items on filter change
     };
 
@@ -120,7 +126,7 @@ function Catalog({ addToCart }) {
                     <select
                         className="form-select"
                         value={rating || ''}
-                        onChange={(e) => handleRatingChange(parseInt(e.target.value))}
+                        onChange={(e) => handleRatingChange(parseInt(e.target.value) || '')}
                     >
                         <option value="">Select Rating</option>
                         {[5, 4, 3, 2, 1].map(star => (
