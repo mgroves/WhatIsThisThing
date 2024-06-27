@@ -85,7 +85,7 @@ The shared backend configuration is stored in `appsettings.json` within the `Wha
 
 ### Browse Page
 - View the entire catalog.
-- (Coming soon) Filter items based on review scores.
+- Filter items based on review scores/prices.
 
 ## License
 
