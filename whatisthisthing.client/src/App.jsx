@@ -1,5 +1,5 @@
 ﻿import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Home from './components/Home';
 import WhatIsThis from './components/WhatIsThis';
 import Catalog from './components/Catalog';
@@ -9,9 +9,27 @@ import './App.css';
 
 function App() {
 
+    const codeRef = useRef(null);
+
+    const handleCopy = () => {
+        const codeContent = codeRef.current.innerText;
+        navigator.clipboard.writeText(codeContent).then(() => {
+            alert('Copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy!', err);
+        });
+    };
+
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
     const [numItems, setNumItems] = useState(0);
+    const [modalBody, setModalBody] = useState("");
+    const [modalTitle, setModalTitle] = useState("");
+
+    const modalInfo = (title, body) => {
+        setModalTitle(title);
+        setModalBody(body);
+    };
 
     const addToCart = (item) => {
         const updatedCart = cart.map(cartItem =>
@@ -62,16 +80,42 @@ function App() {
                                 </li>
                                 <CartDropdown cart={cart} total={total} numItems={numItems} clearCart={clearCart} />
                             </ul>
+                            {modalTitle &&
+                                <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    SQL++
+                                </button>
+                            }
                         </div>
 
                     </div>
                 </nav>
                 <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/whatisthis" element={<WhatIsThis addToCart={addToCart} />} />
-                    <Route path="/catalog" element={<Catalog addToCart={addToCart} />} />
-                    <Route path="/stores" element={<Stores />} />
+                    <Route path="/" element={<Home modalInfo={modalInfo} />} />
+                    <Route path="/whatisthis" element={<WhatIsThis addToCart={addToCart} modalInfo={modalInfo} />} />
+                    <Route path="/catalog" element={<Catalog addToCart={addToCart} modalInfo={modalInfo} />} />
+                    <Route path="/stores" element={<Stores modalInfo={modalInfo} />} />
                 </Routes>
+            </div>
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-xl">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">{modalTitle}</h1>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <pre className="">
+                                <code ref={codeRef}>
+                                    {modalBody}
+                                </code>
+                            </pre>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">✖Close</button>
+                            <button type="button" className="btn btn-primary" onClick={handleCopy}>📋Copy</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </Router>
     );

@@ -18,6 +18,6 @@ public class StoreController : Controller
     public async Task<IActionResult> Stores([FromQuery] LocationsRequest request)
     {
         var items = await _dataLayer.GetStores(request);
-        return Ok(new { data = items });
+        return Ok(items);
     }
 }

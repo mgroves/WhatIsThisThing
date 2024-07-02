@@ -26,7 +26,7 @@ public class ItemController : Controller
 
         var response = await _identifierService.Identify(request);
 
-        return Ok(new { data = response });
+        return Ok(response);
     }
 
     [HttpGet]
@@ -34,6 +34,6 @@ public class ItemController : Controller
     public async Task<IActionResult> Browse([FromQuery] BrowseRequest request)
     {
         var items = await _dataLayer.BrowseCatalog(request);
-        return Ok(new { data = items });
+        return Ok(items);
     }
 }

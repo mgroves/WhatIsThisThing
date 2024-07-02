@@ -7,9 +7,9 @@ namespace WhatIsThisThing.Core.Services;
 
 public interface IDataLayer
 {
-    Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, GeoCoord requestLocation);
-    Task<List<ItemResponse>> BrowseCatalog(BrowseRequest request);
-    Task<List<Store>> GetStores(LocationsRequest request);
+    Task<WithModalInfo<List<ItemResponse>>> FindItemsWithStockByVectorAndLocation(float[] embedding, GeoCoord requestLocation);
+    Task<WithModalInfo<List<ItemResponse>>> BrowseCatalog(BrowseRequest request);
+    Task<WithModalInfo<List<Store>>> GetStores(LocationsRequest request);
 }
 
 public class DataLayer : IDataLayer
@@ -23,7 +23,7 @@ public class DataLayer : IDataLayer
         _bucketProvider = bucketProvider;
     }
     
-    public async Task<List<ItemResponse>> FindItemsWithStockByVectorAndLocation(float[] embedding, GeoCoord requestLocation)
+    public async Task<WithModalInfo<List<ItemResponse>>> FindItemsWithStockByVectorAndLocation(float[] embedding, GeoCoord requestLocation)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
@@ -85,10 +85,15 @@ public class DataLayer : IDataLayer
 
         var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
-        return await rows.ToListAsync();
+        return new WithModalInfo<List<ItemResponse>>
+        {
+            ModalTitle = "Find items with stock by vector and location",
+            ModalContent = sql,
+            Data = await rows.ToListAsync()
+        };
     }
 
-    public async Task<List<ItemResponse>> BrowseCatalog(BrowseRequest request)
+    public async Task<WithModalInfo<List<ItemResponse>>> BrowseCatalog(BrowseRequest request)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
@@ -141,7 +146,12 @@ public class DataLayer : IDataLayer
 
         var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
-        return await rows.ToListAsync();
+        return new WithModalInfo<List<ItemResponse>>
+        {
+            ModalTitle = "Browse catalog (paged)",
+            ModalContent = sql,
+            Data = await rows.ToListAsync()
+        };
     }
 
     private string WhereMinRating(BrowseRequest request)
@@ -167,7 +177,7 @@ public class DataLayer : IDataLayer
         return $" AND t1.price >= {request.MinPrice} ";
     }
 
-    public async Task<List<Store>> GetStores(LocationsRequest request)
+    public async Task<WithModalInfo<List<Store>>> GetStores(LocationsRequest request)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
@@ -180,6 +190,11 @@ public class DataLayer : IDataLayer
 
         var result = await cluster.QueryAsync<Store>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
-        return await rows.ToListAsync();
+        return new WithModalInfo<List<Store>>
+        {
+            ModalTitle = "Browse stores (paged)",
+            ModalContent = sql,
+            Data = await rows.ToListAsync()
+        };
     }
 }

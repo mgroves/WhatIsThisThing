@@ -5,7 +5,7 @@ namespace WhatIsThisThing.Core.Services;
 
 public interface IIdentifierService
 {
-    Task<IdentifyResponse> Identify(IdentifyRequest request);
+    Task<WithModalInfo<IdentifyResponse>> Identify(IdentifyRequest request);
 }
 
 public class IdentifierService : IIdentifierService
@@ -19,7 +19,7 @@ public class IdentifierService : IIdentifierService
         _data = data;
     }
     
-    public async Task<IdentifyResponse> Identify(IdentifyRequest request)
+    public async Task<WithModalInfo<IdentifyResponse>> Identify(IdentifyRequest request)
     {
         // get embedding
         var embedding = await _embedding.GetImageEmbedding(request.Image);
@@ -27,10 +27,13 @@ public class IdentifierService : IIdentifierService
         // search database
         var items = await _data.FindItemsWithStockByVectorAndLocation(embedding, request.Location);
 
-        var result = new IdentifyResponse();
+        var result = new WithModalInfo<IdentifyResponse>();
 
-        result.IdentifiedItem = items.First();
-        result.RelatedItems = items.Skip(1).ToList();
+        result.Data = new IdentifyResponse();
+        result.Data.IdentifiedItem = items.Data.First();
+        result.Data.RelatedItems = items.Data.Skip(1).ToList();
+        result.ModalTitle = items.ModalTitle;
+        result.ModalContent = items.ModalContent;
         
         return result;
     }

@@ -1,6 +1,10 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 
-function Home() {
+function Home({ modalInfo }) {
+    useEffect(() => {
+        modalInfo("", "");
+    });
+
     return (
         <main>
 

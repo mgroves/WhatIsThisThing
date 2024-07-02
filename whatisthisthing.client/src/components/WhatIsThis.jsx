@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Item from './Item';
 
-function WhatIsThis({ addToCart }) {
+function WhatIsThis({ addToCart, modalInfo }) {
     const [photo, setPhoto] = useState(null);
     const [identifiedItem, setIdentifiedItem] = useState(null);
     const [relatedItems, setRelatedItems] = useState([]);
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        modalInfo("","");
+    }, []);
 
     const handlePhotoUpload = async (event) => {
         const file = event.target.files[0];
@@ -58,8 +62,11 @@ function WhatIsThis({ addToCart }) {
 
                             // Handle the response
                             const { identifiedItem, relatedItems } = data.data;
+                            const { modalContent, modalTitle } = data;
+
                             setIdentifiedItem(identifiedItem);
                             setRelatedItems(relatedItems);
+                            modalInfo(modalTitle, modalContent);
                         } catch (error) {
                             console.error('Error identifying the item:', error);
                         } finally {

@@ -16,14 +16,14 @@ const fetchItems = async (page, location, priceRange, rating) => {
         }
         const response = await fetch(queryString);
         const result = await response.json();
-        return result.data;
+        return result;
     } catch (error) {
         console.error("Error fetching data:", error);
-        return [];
+        return { data: [], modalTitle: null, modalContent: null };
     }
 };
 
-function Catalog({ addToCart }) {
+function Catalog({ addToCart, modalInfo }) {
     const [items, setItems] = useState([]);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
@@ -32,6 +32,8 @@ function Catalog({ addToCart }) {
     const observer = useRef();
 
     useEffect(() => {
+        modalInfo("", "");
+
         const fetchAndSetItems = async () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
@@ -39,20 +41,24 @@ function Catalog({ addToCart }) {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     };
-                    const newItems = await fetchItems(page, location, priceRange, rating);
+                    const { data, modalContent, modalTitle } = await fetchItems(page, location, priceRange, rating);
+
                     setItems(prevItems => {
                         if (page === 0) {
-                            return newItems;
+                            return data;
                         } else {
-                            const filteredItems = newItems.filter(item => !prevItems.some(existingItem => existingItem.name === item.name));
+                            const filteredItems = data.filter(item => !prevItems.some(existingItem => existingItem.name === item.name));
                             return [...prevItems, ...filteredItems];
                         }
                     });
-                    if (newItems.length === 0) {
+
+                    if (data.length === 0) {
                         setHasMore(false);
                     } else {
                         setHasMore(true); // Reset hasMore if items are fetched
                     }
+
+                    modalInfo(modalTitle, modalContent);
                 }, (error) => {
                     console.error("Error getting location:", error);
                     setHasMore(false);

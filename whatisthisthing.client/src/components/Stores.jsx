@@ -5,29 +5,36 @@ const fetchStores = async (page) => {
     try {
         const response = await fetch(`/api/stores?page=${page}`);
         const result = await response.json();
-        return result.data;
+        return result;
     } catch (error) {
         console.error("Error fetching data:", error);
-        return [];
+        return { data: [], modalTitle: null, modalContent: null };
     }
 };
 
-function Stores() {
+function Stores({ modalInfo }) {
     const [stores, setStores] = useState([]);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const observer = useRef();
 
     useEffect(() => {
+        modalInfo("", "");
+
         const fetchAndSetStores = async () => {
-            const newStores = await fetchStores(page);
+            const { data, modalTitle, modalContent } = await fetchStores(page);
+
             setStores(prevStores => {
-                const filteredStores = newStores.filter(store => !prevStores.some(existingStore => existingStore.name === store.name));
+                const filteredStores = data.filter(store => !prevStores.some(existingStore => existingStore.name === store.name));
                 return [...prevStores, ...filteredStores];
             });
-            if (newStores.length === 0) {
+            if (data.length === 0) {
                 setHasMore(false);
+            } else {
+                setHasMore(true); // Reset hasMore if items are fetched
             }
+
+            modalInfo(modalTitle, modalContent);
         };
 
         fetchAndSetStores();
