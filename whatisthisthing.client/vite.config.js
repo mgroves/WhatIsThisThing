@@ -49,6 +49,10 @@ export default defineConfig({
             '^/api/.*': {
                 target: 'https://localhost:7145/',
                 secure: false
+            },
+            '^/images/.*': {
+                target: 'https://localhost:7145/',
+                secure: false
             }
         },
         port: 5173,

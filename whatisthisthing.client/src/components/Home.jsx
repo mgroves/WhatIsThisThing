@@ -1,53 +1,64 @@
-import React from 'react';
+﻿import React from 'react';
 
 function Home() {
     return (
-        <div className="container mt-5">
-            <div className="text-center">
-                <h2 className="display-4">Welcome to "What Is This Thing?"</h2>
-                <p className="lead"><strong>What Is This Thing?</strong> is a demo application showcasing vector search
-                    and hybrid search using Couchbase. It is a demo eCommerce website with
-                    features like semantic visual search with vectors, geo-location-based product availability, and more.</p>
-            </div>
-            <div id="carouselExample" className="carousel slide">
-                <div className="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                </div>
-                <div className="carousel-inner">
-                    <div className="carousel-item active">
-                        <img src="https://picsum.photos/1024/300?random=1" className="d-block w-100" />
-                        <div className="carousel-caption d-none d-md-block text-shadow">
-                            <h5>Semantic visual search</h5>
-                            <p>Couchbase supports knn (nearest neighbor) search on vector embeddings. With an image model, this means you can search for visually similar images.</p>
-                        </div>
-                    </div>
-                    <div className="carousel-item">
-                        <img src="https://picsum.photos/1024/300?random=2" className="d-block w-100" />
-                        <div className="carousel-caption d-none d-md-block text-shadow">
-                            <h5>Geospatial Search</h5>
-                            <p>Couchbase also supports search by geolocation (latitude and longitude). This allows searches for data that is within distances, bounding polygons, radius, etc.</p>
-                        </div>
-                    </div>
-                    <div className="carousel-item">
-                        <img src="https://picsum.photos/1024/300?random=3" className="d-block w-100" />
-                        <div className="carousel-caption d-none d-md-block text-shadow">
-                            <h5>SQL++ Hybrid Search</h5>
-                            <p>Couchbase's query language is SQL++, supporting standard SQL predicates, as well as vector, location, time series, and more, all from a single query.</p>
-                        </div>
+        <main>
+
+            <section className="py-5 text-center container">
+                <div className="row">
+                    <div className="col-lg-6 col-md-8 mx-auto">
+                        <h1 className="fw-light">What Is This Thing?</h1>
+                        <p className="lead text-body-secondary"><strong>What Is This Thing?</strong> is a demo application showcasing vector search
+                            and hybrid search using Couchbase. It is a demo eCommerce website with
+                            features like semantic visual search with vectors, geo-location-based product availability, and more.</p>
+                        <p>
+                            <a href="https://www.couchbase.com/products/capella/" className="btn btn-primary my-2">Get Started for Free with Capella</a>
+                            <a href="https://www.couchbase.com/downloads/" className="btn btn-secondary my-2">Download Couchbase Server</a>
+                        </p>
                     </div>
                 </div>
-                <button className="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Previous</span>
-                </button>
-                <button className="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                    <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span className="visually-hidden">Next</span>
-                </button>
+            </section>
+
+            <div className="album py-5 bg-body-tertiary">
+                <div className="container">
+                    <div class="card-group">
+                        <div class="card">
+                            <img src="images/visualsearch.jpg" className="card-img-top" />
+                                <div class="card-body">
+                                <h5 class="card-title">Semantic visual search</h5>
+                                <p class="card-text">Couchbase supports knn (nearest neighbor) search on vector embeddings. With an image model, this means you can search for visually similar images.</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="btn btn-primary" href="/whatisthis" role="button">Try it now</a>
+                                </div>
+                        </div>
+                        <div class="card">
+                            <img src="images/geospatial.jpg" className="card-img-top" />
+                                <div class="card-body">
+                                <h5 class="card-title">Geospatial Search</h5>
+                                <p class="card-text">Couchbase supports search by geolocation (latitude and longitude). This allows searches for data that is within distances, bounding polygons, radius, etc.</p>
+                                </div>
+                                <div class="card-footer">
+                                <a class="btn btn-primary" href="/catalog" role="button">Try it now</a>
+                                </div>
+                        </div>
+                        <div class="card">
+                            <img src="images/hybrid.jpg" className="card-img-top" />
+                                <div class="card-body">
+                                <h5 class="card-title">SQL++ Hybrid Search</h5>
+                                <p class="card-text">Couchbase's query language is SQL++, supporting standard SQL predicates, as well as vector, location, time series, and more, all from a single query.</p>
+                                </div>
+                                <div class="card-footer">
+                                <a class="btn btn-primary" href="https://docs.couchbase.com/server/current/search/run-searches.html#sql" role="button">Learn More</a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+
+        </main>
+
+        
     );
 }
 
