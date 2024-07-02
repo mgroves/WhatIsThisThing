@@ -55,6 +55,7 @@ export default defineConfig({
                 secure: false
             }
         },
+        host: true,
         port: 5173,
         https: {
             key: fs.readFileSync(keyFilePath),

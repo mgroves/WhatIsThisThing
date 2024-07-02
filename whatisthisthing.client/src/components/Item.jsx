@@ -35,7 +35,7 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
 
     return (
         <div className="card" style={{ width: '18rem' }} ref={ref}>
-            <img className="card-img-top" src={image} alt={name} />
+            <img className="card-img-top" loading="lazy" src={image} alt={name} />
             <div className="card-body">
                 <h5 className="card-title">{name}</h5>
                 <p className="card-text">{desc}</p>

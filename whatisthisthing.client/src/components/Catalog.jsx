@@ -33,6 +33,9 @@ function Catalog({ addToCart, modalInfo }) {
 
     useEffect(() => {
         modalInfo("", "");
+    }, []);
+
+    useEffect(() => {
 
         const fetchAndSetItems = async () => {
             if (navigator.geolocation) {
@@ -55,10 +58,9 @@ function Catalog({ addToCart, modalInfo }) {
                     if (data.length === 0) {
                         setHasMore(false);
                     } else {
+                        modalInfo(modalTitle, modalContent);
                         setHasMore(true); // Reset hasMore if items are fetched
                     }
-
-                    modalInfo(modalTitle, modalContent);
                 }, (error) => {
                     console.error("Error getting location:", error);
                     setHasMore(false);
