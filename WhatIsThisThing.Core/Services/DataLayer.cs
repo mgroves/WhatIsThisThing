@@ -29,7 +29,7 @@ public class DataLayer : IDataLayer
         var cluster = bucket.Cluster;
 
         var sql = @$"
-            WITH closestStores AS (
+            WITH closestStores AS (                     /* CTE to get closest stores based on user's location */
                 SELECT x.name, META(x).id AS id
                 FROM whatisthis._default.Stores x
                 WHERE SEARCH(x, {{
@@ -57,7 +57,7 @@ public class DataLayer : IDataLayer
 
 	            LIMIT 3
             ),
-            stockCte AS (
+            stockCte AS (                       /* CTE to find out what's in stock */
 	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
 	            FROM whatisthis._default.Stock stock1
 	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
@@ -65,7 +65,7 @@ public class DataLayer : IDataLayer
             SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
             FROM whatisthis._default.Items AS t1
             LEFT NEST stockCte s ON s.itemId = META(t1).id
-            WHERE SEARCH(t1,
+            WHERE SEARCH(t1,                    /* vector search using image embedding */
               {{
                 ""fields"": [""*""],
                 ""query"": {{
@@ -100,7 +100,7 @@ public class DataLayer : IDataLayer
 
        
         var sql = @$"
-            WITH closestStores AS (
+            WITH closestStores AS (                     /* CTE to find closet stores to user */
                 SELECT x.name, META(x).id AS id
                 FROM whatisthis._default.Stores x
                 WHERE SEARCH(x, {{
@@ -128,7 +128,7 @@ public class DataLayer : IDataLayer
 
 	            LIMIT 3
             ),
-            stockCte AS (
+            stockCte AS (                           /* CTE to find out what's in stock */
 	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
 	            FROM whatisthis._default.Stock stock1
 	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
@@ -137,9 +137,9 @@ public class DataLayer : IDataLayer
             FROM whatisthis._default.Items AS t1
             LEFT NEST stockCte s ON s.itemId = META(t1).id
             WHERE 1==1
-                {WhereMinPrice(request)}
-                {WhereMaxPrice(request)}
-                {WhereMinRating(request)}
+                {WhereMinPrice(request)}            /* min price filter (if any) */
+                {WhereMaxPrice(request)}            /* max price filter (if any) */
+                {WhereMinRating(request)}           /* min rating filter (if any) */
             ORDER BY t1.name
             LIMIT {PAGE_SIZE}
             OFFSET {request.Page * PAGE_SIZE}";
