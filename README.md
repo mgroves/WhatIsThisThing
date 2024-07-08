@@ -13,7 +13,7 @@
 
 ## Configuration
 
-The shared backend configuration is stored in `appsettings.json` within the `WhatIsThisThing.Core` project:
+The shared backend configuration is stored in `appsettings.json` or `appsettings.Development.json` within the `WhatIsThisThing.Core` project:
 
 ```json
 {
@@ -30,6 +30,8 @@ The shared backend configuration is stored in `appsettings.json` within the `Wha
   }
 }
 ```
+
+There is an `appsettings.Development.json.sample` file included. You can use this as a starter example when creating your own `appsettings.Development.json` file.
 
 ## Setup Instructions
 
@@ -60,6 +62,7 @@ The shared backend configuration is stored in `appsettings.json` within the `Wha
 4. **Configure Azure Computer Vision**
    - Obtain your endpoint and subscription key from the Azure portal.
    - Update `appsettings.json` in the `WhatIsThisThing.Core` project with your Azure Computer Vision credentials.
+   - Confirm that you have the [correct permission](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#ai--machine-learning) to use this endpoint.
 
 5. **Load sample data into Couchbase**
    ```bash
