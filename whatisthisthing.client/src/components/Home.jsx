@@ -25,35 +25,35 @@ function Home({ modalInfo }) {
 
             <div className="album py-5 bg-body-tertiary">
                 <div className="container">
-                    <div class="card-group">
-                        <div class="card">
+                    <div className="card-group">
+                        <div className="card">
                             <img src="images/visualsearch.jpg" className="card-img-top" />
-                                <div class="card-body">
-                                <h5 class="card-title">Semantic visual search</h5>
-                                <p class="card-text">Couchbase supports knn (nearest neighbor) search on vector embeddings. With an image model, this means you can search for visually similar images.</p>
+                                <div className="card-body">
+                                <h5 className="card-title">Semantic visual search</h5>
+                                <p className="card-text">Couchbase supports knn (nearest neighbor) search on vector embeddings. With an image model, this means you can search for visually similar images.</p>
                                 </div>
-                                <div class="card-footer">
-                                    <a class="btn btn-primary" href="/whatisthis" role="button">Try it now</a>
+                                <div className="card-footer">
+                                    <a className="btn btn-primary" href="/whatisthis" role="button">Try it now</a>
                                 </div>
                         </div>
-                        <div class="card">
+                        <div className="card">
                             <img src="images/geospatial.jpg" className="card-img-top" />
-                                <div class="card-body">
-                                <h5 class="card-title">Geospatial Search</h5>
-                                <p class="card-text">Couchbase supports search by geolocation (latitude and longitude). This allows searches for data that is within distances, bounding polygons, radius, etc.</p>
+                                <div className="card-body">
+                                <h5 className="card-title">Geospatial Search</h5>
+                                <p className="card-text">Couchbase supports search by geolocation (latitude and longitude). This allows searches for data that is within distances, bounding polygons, radius, etc.</p>
                                 </div>
-                                <div class="card-footer">
-                                <a class="btn btn-primary" href="/catalog" role="button">Try it now</a>
+                                <div className="card-footer">
+                                <a className="btn btn-primary" href="/catalog" role="button">Try it now</a>
                                 </div>
                         </div>
-                        <div class="card">
+                        <div className="card">
                             <img src="images/hybrid.jpg" className="card-img-top" />
-                                <div class="card-body">
-                                <h5 class="card-title">SQL++ Hybrid Search</h5>
-                                <p class="card-text">Couchbase's query language is SQL++, supporting standard SQL predicates, as well as vector, location, time series, and more, all from a single query.</p>
+                                <div className="card-body">
+                                <h5 className="card-title">SQL++ Hybrid Search</h5>
+                                <p className="card-text">Couchbase's query language is SQL++, supporting standard SQL predicates, as well as vector, location, time series, and more, all from a single query.</p>
                                 </div>
-                                <div class="card-footer">
-                                <a class="btn btn-primary" href="https://docs.couchbase.com/server/current/search/run-searches.html#sql" role="button">Learn More</a>
+                                <div className="card-footer">
+                                <a className="btn btn-primary" href="https://docs.couchbase.com/server/current/search/run-searches.html#sql" role="button">Learn More</a>
                                 </div>
                         </div>
                     </div>
