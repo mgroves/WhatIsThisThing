@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using Couchbase.KeyValue;
-using System.Xml.Linq;
+﻿using Couchbase.KeyValue;
 using WhatIsThisThing.Core.Services;
 
 namespace WhatIsThisThing.Loader
