@@ -56,15 +56,17 @@ public class DataLayer : IDataLayer
 	            }})
 
 	            LIMIT 3
-            ),
-            stockCte AS (                       /* CTE to find out what's in stock */
-	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
-	            FROM whatisthis._default.Stock stock1
-	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
             )
-            SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, SEARCH_SCORE(t1) AS score
+            SELECT t1.name, t1.`desc`, t1.image, t1.price, SEARCH_SCORE(t1) AS score,
+                ARRAY_AGG({{
+                    ""storeName"": store1.name,
+                    ""quantity"": stock1.numInStock
+                }}) AS Stock
             FROM whatisthis._default.Items AS t1
-            LEFT NEST stockCte s ON s.itemId = META(t1).id
+            LEFT JOIN whatisthis._default.Stock AS stock1
+                ON SPLIT(META(stock1).id, ""::"")[1] = META(t1).id
+            LEFT JOIN closestStores AS store1
+                ON META(stock1).id LIKE store1.id || '%'
             WHERE SEARCH(t1,                    /* vector search using image embedding */
               {{
                 ""fields"": [""*""],
@@ -80,8 +82,8 @@ public class DataLayer : IDataLayer
                 ]
               }}
             )
+            GROUP BY t1.name, t1.`desc`, t1.image, t1.price, SEARCH_SCORE(t1)
             ORDER BY score DESC";
-
 
         var result = await cluster.QueryAsync<ItemResponse>(sql);
         var rows = result.Rows.AsAsyncEnumerable();
@@ -127,19 +129,23 @@ public class DataLayer : IDataLayer
 	            }})
 
 	            LIMIT 3
-            ),
-            stockCte AS (                           /* CTE to find out what's in stock */
-	            SELECT SPLIT(META(stock1).id, ""::"")[1] AS itemId, store1.name AS storeName, stock1.numInStock AS quantity
-	            FROM whatisthis._default.Stock stock1
-	            JOIN closestStores store1 ON META(stock1).id LIKE store1.id || '%'
             )
-            SELECT t1.name, t1.`desc`, t1.image, t1.price, s as Stock, t1.rating, SEARCH_SCORE(t1) AS score
+            
+            SELECT t1.name, t1.`desc`, t1.image, t1.price, t1.rating,
+                ARRAY_AGG({{
+                    ""storeName"": store1.name,
+                    ""quantity"": stock1.numInStock
+                }}) AS Stock
             FROM whatisthis._default.Items AS t1
-            LEFT NEST stockCte s ON s.itemId = META(t1).id
+            LEFT JOIN whatisthis._default.Stock AS stock1
+                ON SPLIT(META(stock1).id, ""::"")[1] = META(t1).id
+            LEFT JOIN closestStores AS store1 
+                ON META(stock1).id LIKE store1.id || '%'
             WHERE 1==1
                 {WhereMinPrice(request)}            /* min price filter (if any) */
                 {WhereMaxPrice(request)}            /* max price filter (if any) */
                 {WhereMinRating(request)}           /* min rating filter (if any) */
+            GROUP BY t1.name, t1.`desc`, t1.image, t1.price, t1.rating
             ORDER BY t1.name
             LIMIT {PAGE_SIZE}
             OFFSET {request.Page * PAGE_SIZE}";
