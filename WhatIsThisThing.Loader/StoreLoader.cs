@@ -62,6 +62,15 @@ internal class StoreLoader
                 Lon = -0.126951
             }
         });
+        stores.Add("store999", new
+        {
+            Name = "Couchbase Headquarters",
+            Geo = new
+            {
+                Lat = 37.320136,
+                Lon = -121.951316
+            }
+        });
 
 
         foreach (var store in stores)

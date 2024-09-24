@@ -68,11 +68,12 @@ Console.WriteLine("Done creating Couchbase collections...");
 // ******** load initial demo data
 
 IEmbeddingService embed = host.Services.GetService<IEmbeddingService>();
+var stockCollection = await bucket.CollectionAsync("Stock");
 
 // load items if necessary
 Console.WriteLine("Loading demo items...");
 var itemCollection = await bucket.CollectionAsync("Items");
-var itemLoader = new ItemLoader(itemCollection, embed);
+var itemLoader = new ItemLoader(itemCollection, embed, stockCollection);
 await itemLoader.Load();
 Console.WriteLine("Done loading demo items.");
 
@@ -84,7 +85,6 @@ Console.WriteLine("Done loading demo stores.");
 
 // load stock
 Console.WriteLine("Loading demo stock...");
-var stockCollection = await bucket.CollectionAsync("Stock");
 await StockLoader.Load(stockCollection, maxItems: 15, maxStores: 6);
 Console.WriteLine("Done loading demo stock.");
 

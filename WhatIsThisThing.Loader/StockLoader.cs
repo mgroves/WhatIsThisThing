@@ -21,8 +21,13 @@ internal class StockLoader
                 
                 var itemIdString = string.Format("{0:000}", itemId);
                 var storeIdString = string.Format("{0:000}", storeId);
-                await stockCollection.UpsertAsync($"store{storeIdString}::item{itemIdString}", new { numInStock = num });
+                await LoadStock(stockCollection, $"store{storeIdString}", $"item{itemIdString}", num);
             }
         }
+    }
+
+    public static async Task LoadStock(ICouchbaseCollection stockCollection, string storeId, string itemId, int numInStock)
+    {
+        await stockCollection.UpsertAsync($"{storeId}::{itemId}", new { numInStock = numInStock });
     }
 }

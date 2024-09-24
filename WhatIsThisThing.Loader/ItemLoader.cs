@@ -7,11 +7,13 @@ namespace WhatIsThisThing.Loader
     {
         private readonly ICouchbaseCollection _itemCollection;
         private readonly IEmbeddingService _embed;
+        private readonly ICouchbaseCollection _stockCollection;
 
-        public ItemLoader(ICouchbaseCollection itemCollection, IEmbeddingService embed)
+        public ItemLoader(ICouchbaseCollection itemCollection, IEmbeddingService embed, ICouchbaseCollection stockCollection)
         {
             _itemCollection = itemCollection;
             _embed = embed;
+            _stockCollection = stockCollection;
         }
         
         public async Task Load()
@@ -152,7 +154,65 @@ namespace WhatIsThisThing.Loader
                 imagePath: Path.Combine(imagesFolderPath, "015_graphene_membrane.webp")
             );
 
+            await LoadCouchbaseItem(
+                key: "item016",
+                name: "Couchbase Pen",
+                desc: "A sleek black pen with silver accents, featuring the Couchbase logo, perfect for everyday writing with a professional touch.",
+                price: 1.79,
+                imagePath: Path.Combine(imagesFolderPath, "016_couchbase_pen.jpg")
+            );
+
+            await LoadCouchbaseItem(
+                key: "item017",
+                name: "Couchbase Carabiner",
+                desc: "A sturdy metallic carabiner with a compact design, featuring the Couchbase logo, ideal for securing keys or gear on the go.",
+                price: 1.99,
+                imagePath: Path.Combine(imagesFolderPath, "017_couchbase_carabiner.jpg")
+            );
+
+            await LoadCouchbaseItem(
+                key: "item018",
+                name: "Couchbase SD Card",
+                desc: "A 4GB PNY Premium SD card preloaded with Couchbase software, ready for quick installation on compatible devices.",
+                price: 0.99,
+                imagePath: Path.Combine(imagesFolderPath, "018_sd_card.jpg")
+            );
+
+            await LoadCouchbaseItem(
+                key: "item019",
+                name: "Couchbase Phone Mount",
+                desc: "A red adjustable plastic ball with a magnetic phone mount, featuring the Couchbase logo, ideal for hands-free use and secure phone positioning.",
+                price: 4.99,
+                imagePath: Path.Combine(imagesFolderPath, "019_couchbase_phone_mount.jpg")
+            );
+
         }
+
+        private async Task LoadCouchbaseItem(string key, string name, string desc, double price, string imagePath)
+        {
+            var itemExist = await _itemCollection.ExistsAsync(key);
+            if (itemExist.Exists)
+                return;
+
+            var base64image = await ImageHelper.ImageToBase64Png(imagePath);
+
+            var item = new
+            {
+                Name = name,
+                Desc = desc,
+                Price = price,
+                Image = base64image,
+                Rating = 5,
+                ImageVector = await _embed.GetImageEmbedding(base64image)
+            };
+
+            await _itemCollection.UpsertAsync(key, item);
+
+            var numInStock = new Random().Next(1, 200);
+
+            await StockLoader.LoadStock(_stockCollection, "store999", key, numInStock);
+        }
+
 
         private async Task LoadItem(string key, string name, string desc, double price, string imagePath, int rating)
         {
