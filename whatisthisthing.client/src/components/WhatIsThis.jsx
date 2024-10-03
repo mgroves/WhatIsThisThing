@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Item from './Item';
 
+// use these if location services aren't allowed or aren't working
+const DEFAULT_LATITUDE = 37.320136;
+const DEFAULT_LONGITUDE = -121.951316;
+
 function WhatIsThis({ addToCart, modalInfo }) {
     const [photo, setPhoto] = useState(null);
     const [identifiedItem, setIdentifiedItem] = useState(null);
     const [relatedItems, setRelatedItems] = useState([]);
-    const [cart, setCart] = useState([]);
-    const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -37,45 +39,54 @@ function WhatIsThis({ addToCart, modalInfo }) {
                     setPhoto(resizedImageDataUrl);
 
                     // Get user location
-                    navigator.geolocation.getCurrentPosition(async (position) => {
-                        const { latitude, longitude } = position.coords;
-
-                        try {
-                            setLoading(true);
-
-                            const response = await fetch('/api/identify', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    image: resizedImageDataUrl,
-                                    location: { latitude, longitude }
-                                })
-                            });
-
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! Status: ${response.status}`);
-                            }
-
-                            const data = await response.json();
-
-                            // Handle the response
-                            const { identifiedItem, relatedItems } = data.data;
-                            const { modalContent, modalTitle } = data;
-
-                            setIdentifiedItem(identifiedItem);
-                            setRelatedItems(relatedItems);
-                            modalInfo(modalTitle, modalContent);
-                        } catch (error) {
-                            console.error('Error identifying the item:', error);
-                        } finally {
-                            setLoading(false);
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const { latitude, longitude } = position.coords;
+                            await submitPhotoWithLocation(resizedImageDataUrl, latitude, longitude);
+                        },
+                        async () => {
+                            // Use default lat/lon if location services fail
+                            await submitPhotoWithLocation(resizedImageDataUrl, DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
                         }
-                    });
+                    );
                 };
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const submitPhotoWithLocation = async (image, latitude, longitude) => {
+        try {
+            setLoading(true);
+
+            const response = await fetch('/api/identify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image,
+                    location: { latitude, longitude }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Handle the response
+            const { identifiedItem, relatedItems } = data.data;
+            const { modalContent, modalTitle } = data;
+
+            setIdentifiedItem(identifiedItem);
+            setRelatedItems(relatedItems);
+            modalInfo(modalTitle, modalContent);
+        } catch (error) {
+            console.error('Error identifying the item:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -102,19 +113,6 @@ function WhatIsThis({ addToCart, modalInfo }) {
                     {relatedItems.map((item, index) => (
                         <Item key={index} item={item} addToCart={addToCart} />
                     ))}
-                </div>
-            )}
-
-            {cart.length > 0 && (
-                <div style={{ marginTop: '20px' }}>
-                    <h3>Cart</h3>
-                    {cart.map((item, index) => (
-                        <div key={index} style={{ border: '1px solid #ccc', padding: '10px', marginTop: '10px' }}>
-                            <p>{item.name}</p>
-                            <p>Price: ${item.price}</p>
-                        </div>
-                    ))}
-                    <h4>Total: ${total.toFixed(2)}</h4>
                 </div>
             )}
         </div>
