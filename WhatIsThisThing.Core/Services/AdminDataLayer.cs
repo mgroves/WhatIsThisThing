@@ -1,6 +1,7 @@
 ﻿using Couchbase.Extensions.DependencyInjection;
 using WhatIsThisThing.Core.Domain;
 using Couchbase.KeyValue;
+using Couchbase.Query;
 
 namespace WhatIsThisThing.Core.Services;
 
@@ -19,7 +20,7 @@ public class AdminDataLayer
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
         var sql = "SELECT META(i).id, i.name, i.`desc`, i.price, i.rating, i.image FROM whatisthis._default.Items i ORDER BY i.name ASC;";
-        var query = await cluster.QueryAsync<Item>(sql);
+        var query = await cluster.QueryAsync<Item>(sql, new QueryOptions().ScanConsistency(QueryScanConsistency.RequestPlus));
         return await query.Rows.ToListAsync();
     }
 
