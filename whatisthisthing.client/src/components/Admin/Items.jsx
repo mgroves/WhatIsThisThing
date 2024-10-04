@@ -6,28 +6,41 @@ const Items = () => {
     const [newItem, setNewItem] = useState({ name: '', desc: '', price: '', rating: '', image: '' });
     const [editingItemId, setEditingItemId] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        fetchItems();
-    }, []);
+        const params = new URLSearchParams(window.location.search);
+        const page = parseInt(params.get('page')) || 0;
+        setCurrentPage(page);
+        fetchItems(page);
+    }, [currentPage]);
 
     const getJwtToken = () => {
         const authData = JSON.parse(localStorage.getItem('wittAuth'));
         return authData ? authData.token.jwtToken : null;
     };
 
-    const fetchItems = async () => {
-        setLoading(true); // Start spinner
+    const fetchItems = async (page = 0) => {
+        setLoading(true);
         const token = getJwtToken();
-        const response = await fetch('/api/items', {
+        const response = await fetch(`/api/items?page=${page}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
         const data = await response.json();
-        setItems(data);
-        setLoading(false); // Stop spinner
+        setItems(data.items);
+        setTotalPages(data.totalPages);
+        setLoading(false);
     };
+
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+        window.history.pushState({}, '', `?page=${newPage}`);
+        fetchItems(newPage);
+    };
+
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -266,8 +279,26 @@ const Items = () => {
                     </li>
                 ))}
                     </ul>
+                    <div className="pagination-controls text-center mt-4">
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 0}
+                            className="btn btn-secondary me-2"
+                        >
+                            Previous
+                        </button>
+                        <span>Page {currentPage + 1} of {totalPages}</span>
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="btn btn-secondary ms-2"
+                        >
+                            Next
+                        </button>
+                    </div>
             </>
             )}
+
         </div>
     );
 

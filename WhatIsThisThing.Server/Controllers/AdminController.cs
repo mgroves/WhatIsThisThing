@@ -19,10 +19,10 @@ public class AdminController : Controller
     [HttpGet]
     [Authorize]
     [Route("/api/items")]
-    public async Task<IActionResult> GetItems()
+    public async Task<IActionResult> GetItems(int? page = 0)
     {
-        var items = await _adminDataLayer.GetAllItems();
-        return Ok(items);
+        var pageOfItems = await _adminDataLayer.GetAllItems(page);
+        return Ok(new { totalPages = pageOfItems.TotalPages, items = pageOfItems.Collection});
     }
 
     [HttpPost]
