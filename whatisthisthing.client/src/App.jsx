@@ -6,6 +6,9 @@ import Catalog from './components/Catalog';
 import Stores from './components/Stores';
 import CartDropdown from './components/CartDropdown';
 import './App.css';
+import ProtectedRoute from './components/ProtectedRoute';
+import Admin from './components/Admin';
+import Login from './components/Login';
 
 function App() {
 
@@ -79,6 +82,9 @@ function App() {
                                     <Link className="nav-link" to="/stores">Stores</Link>
                                 </li>
                                 <CartDropdown cart={cart} total={total} numItems={numItems} clearCart={clearCart} />
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/admin">🔐 Admin</Link>
+                                </li>
                             </ul>
                             {modalTitle &&
                                 <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -94,6 +100,8 @@ function App() {
                     <Route path="/whatisthis" element={<WhatIsThis addToCart={addToCart} modalInfo={modalInfo} />} />
                     <Route path="/catalog" element={<Catalog addToCart={addToCart} modalInfo={modalInfo} />} />
                     <Route path="/stores" element={<Stores modalInfo={modalInfo} />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/admin" element={<ProtectedRoute element={Admin} />} />
                 </Routes>
             </div>
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

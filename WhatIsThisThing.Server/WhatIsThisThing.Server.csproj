@@ -13,6 +13,9 @@
   <ItemGroup>
     <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.2" />
     <PackageReference Include="CouchbaseNetClient" Version="3.6.2" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageReference Include="MailKit" Version="4.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
     </PackageReference>
@@ -33,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

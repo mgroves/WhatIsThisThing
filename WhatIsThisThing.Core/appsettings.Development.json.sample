@@ -21,5 +21,14 @@
     "Version": "<replicate model version>",
     "ApiKey": "<replicate api key>",
     "Endpoint": "https://api.replicate.com/v1/predictions"
+  },
+  "GoogleOAuth": {
+    "ClientID": "<google API client ID>",
+    "ClientSecret": "<google API client secret>"
+  },
+  "JwtConfig": {
+    "SecurityKey": "xxxxxxxxxxyyyyyyyyyyxxxxxxxxxxyyyyyyyyyyxxxxxxxxxxyyyyyyyyyyxxx",
+    "Issuer": "<issuer>",
+    "Audience": "<audience>"
   }
 }
