@@ -1,19 +1,15 @@
 ﻿import React, { useState, useEffect } from 'react';
 import Spinner from '../Spinner';
 
-const Stores = () => {
+const Stores = ({ currentPage, setCurrentPage }) => {
     const [stores, setStores] = useState([]);
     const [newStore, setNewStore] = useState({ name: '', latitude: '', longitude: '' });
     const [editingStoreIndex, setEditingStoreIndex] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const page = parseInt(params.get('page')) || 0;
-        setCurrentPage(page);
-        fetchStores(page);
+        fetchStores(currentPage);
     }, [currentPage]);
 
     const getJwtToken = () => {
@@ -24,21 +20,31 @@ const Stores = () => {
     const fetchStores = async (page = 0) => {
         setLoading(true);
         const token = getJwtToken();
-        const response = await fetch(`/api/admin/stores?page=${page}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+        try {
+            const response = await fetch(`/api/admin/stores?page=${page}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setStores(data.items);
+                setTotalPages(data.totalPages);
+            } else {
+                console.error("Failed to fetch stores.");
             }
-        });
-        const data = await response.json();
-        setStores(data.items);
-        setTotalPages(data.totalPages);
-        setLoading(false);
+        } catch (error) {
+            console.error("Error fetching stores:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handlePageChange = (newPage) => {
-        setCurrentPage(newPage);
-        window.history.pushState({}, '', `?page=${newPage}`);
-        fetchStores(newPage);
+        if (newPage >= 0 && newPage < totalPages) {
+            setCurrentPage(newPage);
+            window.history.pushState({}, '', `?tab=${parseInt(new URLSearchParams(window.location.search).get('tab'))}&page=${newPage}`);
+        }
     };
 
     const handleCreate = async (e) => {
@@ -49,21 +55,26 @@ const Stores = () => {
 
     const submitNewStore = async (store) => {
         const token = getJwtToken();
-        await fetch('/api/admin/stores', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                name: store.name,
-                latitude: parseFloat(store.latitude),
-                longitude: parseFloat(store.longitude)
-            })
-        });
-        setNewStore({ name: '', latitude: '', longitude: '' });
-        fetchStores();
-        setLoading(false);
+        try {
+            await fetch('/api/admin/stores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: store.name,
+                    latitude: parseFloat(store.latitude),
+                    longitude: parseFloat(store.longitude)
+                })
+            });
+            setNewStore({ name: '', latitude: '', longitude: '' });
+            fetchStores(currentPage);
+        } catch (error) {
+            console.error("Error creating store:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEdit = (index) => {
@@ -75,35 +86,47 @@ const Stores = () => {
         const storeToUpdate = stores[index];
         setLoading(true);
 
-        await fetch(`/api/admin/stores/${storeToUpdate.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                name: storeToUpdate.name,
-                latitude: parseFloat(storeToUpdate.latitude),
-                longitude: parseFloat(storeToUpdate.longitude)
-            })
-        });
+        try {
+            await fetch(`/api/admin/stores/${storeToUpdate.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: storeToUpdate.name,
+                    latitude: parseFloat(storeToUpdate.latitude),
+                    longitude: parseFloat(storeToUpdate.longitude)
+                })
+            });
 
-        setEditingStoreIndex(null);
-        fetchStores();
-        setLoading(false);
+            setEditingStoreIndex(null);
+            fetchStores(currentPage);
+        } catch (error) {
+            console.error("Error updating store:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDelete = async (index) => {
         const token = getJwtToken();
         const storeToDelete = stores[index];
         if (window.confirm('Are you sure you want to delete this store?')) {
-            await fetch(`/api/admin/stores/${storeToDelete.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            fetchStores();
+            setLoading(true);
+            try {
+                await fetch(`/api/admin/stores/${storeToDelete.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                fetchStores(currentPage);
+            } catch (error) {
+                console.error("Error deleting store:", error);
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -240,7 +263,7 @@ const Stores = () => {
                         <span>Page {currentPage + 1} of {totalPages}</span>
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
+                            disabled={currentPage === totalPages - 1}
                             className="btn btn-secondary ms-2"
                         >
                             Next
