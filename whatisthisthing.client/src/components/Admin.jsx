@@ -41,10 +41,13 @@ const Admin = () => {
                     <li className="nav-item" key={index}>
                         <a
                             className={`nav-link ${activeTab === index ? 'active' : ''}`}
-                            href="javascript:;"
+                            href="#"
                             role="tab"
                             tabIndex={0}
-                            onClick={() => handleTabChange(index)}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleTabChange(index);
+                            }}
                         >
                             {tab.name}
                         </a>
