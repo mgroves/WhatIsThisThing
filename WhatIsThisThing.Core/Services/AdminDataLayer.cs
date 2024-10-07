@@ -10,6 +10,7 @@ public class AdminDataLayer
 {
     private const int PAGE_SIZE = 10;
     private const ulong INITIAL_CUSTOM_ITEM_ID = 300;
+    private const ulong INITIAL_STORE_ITEM_ID = 300;
     private readonly IBucketProvider _bucketProvider;
 
     public AdminDataLayer(IBucketProvider bucketProvider)
@@ -102,5 +103,79 @@ public class AdminDataLayer
         var item = itemDoc.ContentAs<Item>();
         item.Id = itemId;
         return item;
+    }
+
+    public async Task<PageOf<Store>> GetAllStores(int? pageNumber = 0)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var cluster = bucket.Cluster;
+        var sql = $@"WITH total AS (SELECT COUNT(1) AS totalItems FROM whatisthis._default.Stores)
+                    SELECT META(s).id, s.name, s.geo.lat as latitude, s.geo.lon as longitude,
+                        CEIL(total.totalItems / $pageSize) AS totalPages
+                    FROM whatisthis._default.Stores s, total
+                    ORDER BY s.name ASC
+                    LIMIT $pageSize
+                    OFFSET $offset;";
+        var result = await cluster.QueryAsync<JObject>(sql, new QueryOptions()
+            .ScanConsistency(QueryScanConsistency.RequestPlus)
+            .Parameter("pageSize", PAGE_SIZE)
+            .Parameter("offset", (pageNumber ?? 0) * PAGE_SIZE)
+        );
+        var items = await result.Rows.ToListAsync();
+        var totalPages = (int)(items.FirstOrDefault()?["totalPages"] ?? 0);
+
+        // super hacky, but this is how I can grab TotalCount AND the inventories in a single query
+        var page = new PageOf<Store>();
+        page.Collection = items.Select(i => i.ToObject<Store>()).ToList();
+        page.TotalPages = totalPages;
+
+        return page;
+    }
+
+    public async Task AddStore(Store store)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var coll = await bucket.CollectionAsync("Stores");
+        var counterColl = await bucket.DefaultCollectionAsync();
+
+        // get increment ID from counter document (create if doesn't exist)
+        var incr = await counterColl.Binary.IncrementAsync("storeCounter", options =>
+        {
+            options.Initial(INITIAL_STORE_ITEM_ID);
+            options.Delta(1);
+        });
+
+        await coll.InsertAsync($"store{incr.Content}", new
+        {
+            store.Name,
+            geo = new
+            {
+                lat = store.Latitude,
+                lon = store.Longitude
+            }
+        });
+    }
+
+    public async Task DeleteStore(string storeId)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var coll = await bucket.CollectionAsync("Stores");
+        await coll.RemoveAsync(storeId);
+    }
+
+    public async Task UpdateStore(Store store)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var coll = await bucket.CollectionAsync("Stores");
+
+        await coll.ReplaceAsync(store.Id, new
+        {
+            name = store.Name,
+            geo = new
+            {
+                lat = store.Latitude,
+                lon = store.Longitude
+            }
+        });
     }
 }

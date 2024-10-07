@@ -84,4 +84,42 @@ public class AdminServices
             Rating = editItemRating
         });
     }
+
+    public async Task AddStore(string newStoreName, float newStoreLatitude, float newStoreLongitude)
+    {
+        // validate
+        if (string.IsNullOrEmpty(newStoreName))
+            throw new ValidationException("Name is required");
+        if (!(newStoreLatitude >= -90 && newStoreLatitude <= 90))
+            throw new ValidationException("Latitude is not valid");
+        if (!(newStoreLongitude >= -180 && newStoreLongitude <= 180))
+            throw new ValidationException("Longitude is not valid");
+
+        await _adminDataLayer.AddStore(new Store
+        {
+            Latitude = newStoreLatitude,
+            Longitude = newStoreLongitude,
+            Name = newStoreName
+        });
+    }
+
+    public async Task EditStore(string editStoreId, string editStoreName, float editStoreLatitude, float editStoreLongitude)
+    {
+        if (string.IsNullOrEmpty(editStoreId))
+            throw new ValidationException("Error: ID is required");
+        if (string.IsNullOrEmpty(editStoreName))
+            throw new ValidationException("Name is required");
+        if (!(editStoreLatitude >= -90 && editStoreLatitude <= 90))
+            throw new ValidationException("Latitude is not valid");
+        if (!(editStoreLongitude >= -180 && editStoreLongitude <= 180))
+            throw new ValidationException("Longitude is not valid");
+
+        await _adminDataLayer.UpdateStore(new Store
+        {
+            Id = editStoreId,
+            Latitude = editStoreLatitude,
+            Longitude = editStoreLongitude,
+            Name = editStoreName
+        });
+    }
 }

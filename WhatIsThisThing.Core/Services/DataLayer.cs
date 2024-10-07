@@ -65,7 +65,7 @@ public class DataLayer : IDataLayer
             FROM whatisthis._default.Items AS t1
             LEFT JOIN whatisthis._default.Stock AS stock1
                 ON SPLIT(META(stock1).id, ""::"")[1] = META(t1).id
-            JOIN closestStores AS store1
+            LEFT JOIN closestStores AS store1
                 ON META(stock1).id LIKE store1.id || '%'
             WHERE SEARCH(t1,                    /* vector search using image embedding */
               {{

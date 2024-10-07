@@ -24,7 +24,7 @@ const Items = () => {
     const fetchItems = async (page = 0) => {
         setLoading(true);
         const token = getJwtToken();
-        const response = await fetch(`/api/items?page=${page}`, {
+        const response = await fetch(`/api/admin/items?page=${page}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -64,7 +64,7 @@ const Items = () => {
 
     const submitNewItem = async (item) => {
         const token = getJwtToken();
-        await fetch('/api/items', {
+        await fetch('/api/admin/items', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ const Items = () => {
         const itemToUpdate = items.find(item => item.id === id);
         setLoading(true);
 
-        await fetch(`/api/items/${id}`, {
+        await fetch(`/api/admin/items/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ const Items = () => {
     const handleDelete = async (id) => {
         const token = getJwtToken();
         if (window.confirm('Are you sure you want to delete this item?')) {
-            await fetch(`/api/items/${id}`, {
+            await fetch(`/api/admin/items/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
