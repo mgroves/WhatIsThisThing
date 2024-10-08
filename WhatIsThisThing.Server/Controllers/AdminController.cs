@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WhatIsThisThing.Core.Services;
 using WhatIsThisThing.Server.Models;
@@ -15,6 +16,61 @@ public class AdminController : Controller
         _adminDataLayer = adminDataLayer;
         _adminServices = adminServices;
     }
+
+    #region stock
+    [HttpGet]
+    [Authorize]
+    [Route("/api/admin/stock")]
+    public async Task<IActionResult> GetStock(int? page = 0)
+    {
+        var pageOfItems = await _adminDataLayer.GetAllStock(page);
+        return Ok(new { totalPages = pageOfItems.TotalPages, stock = pageOfItems.Collection });
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("/api/admin/stock/allStores")]
+    public async Task<IActionResult> GetAllStoresForDropdown()
+    {
+        var stores = await _adminDataLayer.GetAllStoresIdAndNameOnly();
+        return Ok(stores.Select(s => new { s.Id, s.Name }));
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("/api/admin/stock/allItems")]
+    public async Task<IActionResult> GetAllItemsForDropdown()
+    {
+        var items = await _adminDataLayer.GetAllItemsIdAndNameOnly();
+        return Ok(items.Select(s => new { s.Id, s.Name }));
+    }
+
+    [HttpPut]
+    [HttpPost]
+    [Authorize]
+    [Route("/api/admin/stock")]
+    public async Task<IActionResult> AddOrUpdateStock([FromBody] NewStockFormModel form)
+    {
+        if (string.IsNullOrEmpty(form.ItemId))
+            throw new ValidationException("Item ID must be specified");
+        if (string.IsNullOrEmpty(form.StoreId))
+            throw new ValidationException("Store ID must be specified");
+        if (form.NumInStock < 0)
+            throw new ValidationException("Number in Stock must be >= 0");
+        
+        await _adminDataLayer.AddOrUpdateStock(form.ItemId, form.StoreId, form.NumInStock);
+        return Ok("Stock added");
+    }
+
+    [HttpDelete]
+    [Route("/api/admin/stock/{stockKey}")]
+    public async Task<IActionResult> DeleteStock(string stockKey)
+    {
+        await _adminDataLayer.DeleteStock(stockKey);
+        return Ok("Stock deleted");
+    }
+
+    #endregion
 
     #region stores
 
@@ -64,8 +120,7 @@ public class AdminController : Controller
     }
 
     #endregion
-
-
+    
     #region items
 
     [HttpGet]

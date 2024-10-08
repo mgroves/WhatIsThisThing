@@ -178,4 +178,74 @@ public class AdminDataLayer
             }
         });
     }
+
+    public async Task<PageOf<Stock>> GetAllStock(int? pageNumber)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var cluster = bucket.Cluster;
+        var sql = $@"WITH total AS (SELECT COUNT(1) AS totalItems FROM whatisthis._default.Stock)
+                    SELECT META(s).id, s.numInStock,
+                        CEIL(total.totalItems / $pageSize) AS totalPages
+                    FROM whatisthis._default.Stock s, total
+                    ORDER BY META(s).id ASC
+                    LIMIT $pageSize
+                    OFFSET $offset;";
+        var result = await cluster.QueryAsync<JObject>(sql, new QueryOptions()
+            .ScanConsistency(QueryScanConsistency.RequestPlus)
+            .Parameter("pageSize", PAGE_SIZE)
+            .Parameter("offset", (pageNumber ?? 0) * PAGE_SIZE)
+        );
+        var items = await result.Rows.ToListAsync();
+        var totalPages = (int)(items.FirstOrDefault()?["totalPages"] ?? 0);
+
+        // super hacky, but this is how I can grab TotalCount AND the inventories in a single query
+        var page = new PageOf<Stock>();
+        page.Collection = items.Select(i => i.ToObject<Stock>()).ToList();
+        page.TotalPages = totalPages;
+
+        return page;
+    }
+
+    public async Task<List<Store>> GetAllStoresIdAndNameOnly()
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var cluster = bucket.Cluster;
+        var sql = $@"SELECT META(s).id, s.name
+                    FROM whatisthis._default.Stores s
+                    ORDER BY s.name ASC";
+        var result = await cluster.QueryAsync<Store>(sql, new QueryOptions()
+            .ScanConsistency(QueryScanConsistency.NotBounded)
+        );
+        return await result.Rows.ToListAsync();
+    }
+
+    public async Task<List<Item>> GetAllItemsIdAndNameOnly()
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var cluster = bucket.Cluster;
+        var sql = $@"SELECT META(i).id, i.name
+                    FROM whatisthis._default.Items i
+                    ORDER BY i.name ASC";
+        var result = await cluster.QueryAsync<Item>(sql, new QueryOptions()
+            .ScanConsistency(QueryScanConsistency.NotBounded)
+        );
+        return await result.Rows.ToListAsync();
+    }
+
+    public async Task AddOrUpdateStock(string itemId, string storeId, int numInStock)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var coll = await bucket.CollectionAsync("Stock");
+        await coll.UpsertAsync($"{storeId}::{itemId}", new
+        {
+            numInStock
+        });
+    }
+
+    public async Task DeleteStock(string stockKey)
+    {
+        var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
+        var coll = await bucket.CollectionAsync("Stock");
+        await coll.RemoveAsync(stockKey);
+    }
 }
