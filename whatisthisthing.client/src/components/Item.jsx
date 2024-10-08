@@ -60,12 +60,12 @@ const Item = forwardRef(({ item = {}, addToCart }, ref) => {
                     <div className="accordion-item">
                         <h2 className="accordion-header" id={`${accordionId}-headingOne`}>
                             <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={`#${accordionId}-collapseOne`} aria-expanded="true" aria-controls={`${accordionId}-collapseOne`}>
-                                Available Nearby
+                                Pickup Options
                             </button>
                         </h2>
                         <div id={`${accordionId}-collapseOne`} className="accordion-collapse collapse" aria-labelledby={`${accordionId}-headingOne`} data-bs-parent={`#${accordionId}`}>
                             <div className="accordion-body">
-                                {stock.length === 0 ? (<p>No locations near you.</p>) : (
+                                {stock.length === 0 ? (<p>Delivery only.</p>) : (
                                     stock.map((store, index) => (
                                         <StoreAvailability key={index} store={store} />
                                     ))
