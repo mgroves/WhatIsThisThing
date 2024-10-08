@@ -119,7 +119,7 @@ const Items = ({ currentPage, setCurrentPage }) => {
 
     const handleDelete = async (id) => {
         const token = getJwtToken();
-        if (window.confirm('Are you sure you want to delete this item?')) {
+        if (window.confirm('Are you sure you want to delete this item? (associated stock will also be deleted)')) {
             setLoading(true);
             try {
                 await fetch(`/api/admin/items/${id}`, {

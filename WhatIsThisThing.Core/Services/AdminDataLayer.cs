@@ -3,6 +3,7 @@ using WhatIsThisThing.Core.Domain;
 using Couchbase.KeyValue;
 using Couchbase.Query;
 using Newtonsoft.Json.Linq;
+using Couchbase;
 
 namespace WhatIsThisThing.Core.Services;
 
@@ -72,11 +73,19 @@ public class AdminDataLayer
     public async Task DeleteItem(string itemId)
     {
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
-        var coll = await bucket.CollectionAsync("Items");
 
+        var coll = await bucket.CollectionAsync("Items");
+        
+        // delete the item
         await coll.RemoveAsync(itemId);
         
-        // TODO: also delete stock for this item?
+        // delete all stock for this item
+        var cluster = bucket.Cluster;
+        await cluster.QueryAsync<dynamic>( 
+            "DELETE FROM whatisthis._default.Stock WHERE META().id LIKE '%::' || $itemId", new QueryOptions()
+                .Parameter("itemId", itemId)
+                .ScanConsistency(QueryScanConsistency.RequestPlus)
+            );
     }
 
     public async Task UpdateItem(Item item)
@@ -161,6 +170,14 @@ public class AdminDataLayer
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var coll = await bucket.CollectionAsync("Stores");
         await coll.RemoveAsync(storeId);
+
+        // also delete stock for this store
+        var cluster = bucket.Cluster;
+        await cluster.QueryAsync<dynamic>(
+            "DELETE FROM whatisthis._default.Stock WHERE META().id LIKE $storeId || '::%'", new QueryOptions()
+                .Parameter("storeId", storeId)
+                .ScanConsistency(QueryScanConsistency.RequestPlus)
+        );
     }
 
     public async Task UpdateStore(Store store)

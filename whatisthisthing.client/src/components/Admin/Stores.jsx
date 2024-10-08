@@ -112,7 +112,7 @@ const Stores = ({ currentPage, setCurrentPage }) => {
     const handleDelete = async (index) => {
         const token = getJwtToken();
         const storeToDelete = stores[index];
-        if (window.confirm('Are you sure you want to delete this store?')) {
+        if (window.confirm('Are you sure you want to delete this store? (associated stock will also be deleted)')) {
             setLoading(true);
             try {
                 await fetch(`/api/admin/stores/${storeToDelete.id}`, {
