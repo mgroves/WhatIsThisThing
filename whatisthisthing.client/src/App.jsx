@@ -9,19 +9,13 @@ import './App.css';
 import ProtectedRoute from './components/ProtectedRoute';
 import Admin from './components/Admin';
 import Login from './components/Login';
+import SqlSyntaxModal from './components/SqlSyntaxModal';
 
 function App() {
 
     const codeRef = useRef(null);
 
-    const handleCopy = () => {
-        const codeContent = codeRef.current.innerText;
-        navigator.clipboard.writeText(codeContent).then(() => {
-            alert('Copied to clipboard!');
-        }).catch(err => {
-            console.error('Failed to copy!', err);
-        });
-    };
+
 
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
@@ -104,27 +98,7 @@ function App() {
                     <Route path="/admin" element={<ProtectedRoute element={Admin} />} />
                 </Routes>
             </div>
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-xl">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="exampleModalLabel">{modalTitle}</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <pre className="">
-                                <code ref={codeRef}>
-                                    {modalBody}
-                                </code>
-                            </pre>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">✖Close</button>
-                            <button type="button" className="btn btn-primary" onClick={handleCopy}>📋Copy</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <SqlSyntaxModal modalBody={modalBody} modalTitle={modalTitle} />
         </Router>
     );
 }
