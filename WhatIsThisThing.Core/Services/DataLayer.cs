@@ -57,17 +57,23 @@ public class DataLayer : IDataLayer
 
 	            LIMIT 3
             )
-            SELECT t1.name, t1.`desc`, t1.image, t1.price, SEARCH_SCORE(t1) AS score,
-                ARRAY_AGG({{
-                    ""storeName"": store1.name,
-                    ""quantity"": stock1.numInStock
-                }}) AS Stock
-            FROM whatisthis._default.Items AS t1
-            LEFT JOIN whatisthis._default.Stock AS stock1
-                ON SPLIT(META(stock1).id, ""::"")[1] = META(t1).id
-            LEFT JOIN closestStores AS store1
-                ON META(stock1).id LIKE store1.id || '%'
-            WHERE SEARCH(t1,                    /* vector search using image embedding */
+            /* SELECT items with nearby stock numbers */
+
+            SELECT allItems.name, allItems.`desc`, allItems.image, allItems.price, allItems.rating, SEARCH_SCORE(allItems) AS score,
+
+                /* subquery to get stock from nearby locations */
+
+                (SELECT closestStores.name AS storeName, stock.numInStock AS quantity
+                 FROM whatisthis._default.Items items
+                 JOIN whatisthis._default.Stock stock
+                    ON SPLIT(META(stock).id,""::"")[1] == META(items).id
+                 JOIN closestStores
+                    ON SPLIT(META(stock).id,""::"")[0] == closestStores.id
+                 WHERE META(items).id = META(allItems).id) AS stock
+
+            FROM whatisthis._default.Items AS allItems
+
+            WHERE SEARCH(allItems,                    /* vector search using image embedding */
               {{
                 ""fields"": [""*""],
                 ""query"": {{
@@ -82,7 +88,6 @@ public class DataLayer : IDataLayer
                 ]
               }}
             )
-            GROUP BY t1.name, t1.`desc`, t1.image, t1.price, SEARCH_SCORE(t1)
             ORDER BY score DESC";
 
         var result = await cluster.QueryAsync<ItemResponse>(sql);
@@ -100,12 +105,11 @@ public class DataLayer : IDataLayer
         var bucket = await _bucketProvider.GetBucketAsync("whatisthis");
         var cluster = bucket.Cluster;
 
-       
         var sql = @$"
-            WITH closestStores AS (                     /* CTE to find closet stores to user */
+            WITH closestStores AS (                     /* CTE to find 3 closet stores to user */
                 SELECT x.name, META(x).id AS id
                 FROM whatisthis._default.Stores x
-                WHERE SEARCH(x, {{
+                WHERE SEARCH(x, {{                      /* Using FTS engine for radius search */
                  ""fields"": [""*""],
                  ""query"" : {{
                    ""location"" : {{
@@ -130,23 +134,30 @@ public class DataLayer : IDataLayer
 
 	            LIMIT 3
             )
-            
-            SELECT t1.name, t1.`desc`, t1.image, t1.price, t1.rating,
-                ARRAY_AGG({{
-                    ""storeName"": store1.name,
-                    ""quantity"": stock1.numInStock
-                }}) AS Stock
-            FROM whatisthis._default.Items AS t1
-            LEFT JOIN whatisthis._default.Stock AS stock1
-                ON SPLIT(META(stock1).id, ""::"")[1] = META(t1).id
-            JOIN closestStores AS store1 
-                ON META(stock1).id LIKE store1.id || '%'
+
+            /* SELECT items with nearby stock numbers */
+
+            SELECT allItems.name, allItems.`desc`, allItems.image, allItems.price, allItems.rating,
+
+                /* subquery to get stock from nearby locations */
+
+	            (SELECT closestStores.name AS storeName, stock.numInStock AS quantity
+	             FROM whatisthis._default.Items items
+	             JOIN whatisthis._default.Stock stock
+		            ON SPLIT(META(stock).id,""::"")[1] == META(items).id
+	             JOIN closestStores
+		            ON SPLIT(META(stock).id,""::"")[0] == closestStores.id
+	             WHERE META(items).id = META(allItems).id) AS stock
+
+            FROM whatisthis._default.Items AS allItems
             WHERE 1==1
                 {WhereMinPrice(request)}            /* min price filter (if any) */
                 {WhereMaxPrice(request)}            /* max price filter (if any) */
                 {WhereMinRating(request)}           /* min rating filter (if any) */
-            GROUP BY t1.name, t1.`desc`, t1.image, t1.price, t1.rating
-            ORDER BY t1.name
+
+            /* ordering by name for pagination */
+
+            ORDER BY u.name
             LIMIT {PAGE_SIZE}
             OFFSET {request.Page * PAGE_SIZE}";
 
@@ -166,21 +177,21 @@ public class DataLayer : IDataLayer
             return string.Empty;
         if (request.MinRating is < 0 or > 5)
             return string.Empty;
-        return $" AND t1.rating >= {request.MinRating}";
+        return $" AND allItems.rating >= {request.MinRating}";
     }
 
     private string WhereMaxPrice(BrowseRequest request)
     {
         if (!request.MaxPrice.HasValue)
             return string.Empty;
-        return $" AND t1.price <= {request.MaxPrice} ";
+        return $" AND allItems.price <= {request.MaxPrice} ";
     }
 
     private string WhereMinPrice(BrowseRequest request)
     {
         if (!request.MinPrice.HasValue)
             return string.Empty;
-        return $" AND t1.price >= {request.MinPrice} ";
+        return $" AND allItems.price >= {request.MinPrice} ";
     }
 
     public async Task<WithModalInfo<List<Store>>> GetStores(LocationsRequest request)
