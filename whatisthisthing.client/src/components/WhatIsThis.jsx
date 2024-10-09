@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Item from './Item';
+import Spinner from './Spinner';
 
 // use these if location services aren't allowed or aren't working
 const DEFAULT_LATITUDE = 37.320136;
@@ -12,7 +13,7 @@ function WhatIsThis({ addToCart, modalInfo }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        modalInfo("","");
+        modalInfo("", "");
     }, []);
 
     const handlePhotoUpload = async (event) => {
@@ -97,7 +98,7 @@ function WhatIsThis({ addToCart, modalInfo }) {
                 <p>Upload a photo of the mysterious hardware you want to identify.</p>
             </div>
             <input type="file" accept="image/*;capture=camera" onChange={handlePhotoUpload} />
-            {loading && <p>Loading...</p>}
+            {loading && <Spinner />}
             {photo && !loading && <img src={photo} alt="Uploaded" style={{ width: '64px', maxWidth: '400px', marginTop: '20px' }} />}
 
             {identifiedItem && (

@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Item from './Item';
+import Spinner from './Spinner';
 
 const fetchItems = async (page, location, priceRange, rating) => {
     try {
@@ -29,6 +30,7 @@ function Catalog({ addToCart, modalInfo }) {
     const [hasMore, setHasMore] = useState(true);
     const [priceRange, setPriceRange] = useState({});
     const [rating, setRating] = useState();
+    const [loading, setLoading] = useState(false); // Add loading state
     const observer = useRef();
 
     useEffect(() => {
@@ -36,8 +38,8 @@ function Catalog({ addToCart, modalInfo }) {
     }, []);
 
     useEffect(() => {
-
         const fetchAndSetItems = async () => {
+            setLoading(true); // Set loading to true when fetching starts
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     const location = {
@@ -61,13 +63,16 @@ function Catalog({ addToCart, modalInfo }) {
                         modalInfo(modalTitle, modalContent);
                         setHasMore(true); // Reset hasMore if items are fetched
                     }
+                    setLoading(false); // Set loading to false after fetching completes
                 }, (error) => {
                     console.error("Error getting location:", error);
                     setHasMore(false);
+                    setLoading(false); // Set loading to false on error
                 });
             } else {
                 console.error("Geolocation is not supported by this browser.");
                 setHasMore(false);
+                setLoading(false); // Set loading to false if geolocation is not supported
             }
         };
 
@@ -156,7 +161,8 @@ function Catalog({ addToCart, modalInfo }) {
                     }
                 })}
             </div>
-            {!hasMore && <p>All items displayed.</p>}
+            {loading && <div className="text-center my-4"><Spinner /></div>}
+            {!hasMore && !loading && <p>All items displayed.</p>}
         </div>
     );
 }

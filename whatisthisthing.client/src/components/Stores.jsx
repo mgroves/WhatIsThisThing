@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Store from './Store';
+import Spinner from './Spinner';
 
 const fetchStores = async (page) => {
     try {
@@ -16,12 +17,14 @@ function Stores({ modalInfo }) {
     const [stores, setStores] = useState([]);
     const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
     const observer = useRef();
 
     useEffect(() => {
         modalInfo("", "");
 
         const fetchAndSetStores = async () => {
+            setLoading(true);
             const { data, modalTitle, modalContent } = await fetchStores(page);
 
             setStores(prevStores => {
@@ -35,6 +38,7 @@ function Stores({ modalInfo }) {
             }
 
             modalInfo(modalTitle, modalContent);
+            setLoading(false);
         };
 
         fetchAndSetStores();
@@ -59,6 +63,7 @@ function Stores({ modalInfo }) {
                 <h2 className="display-4">Browse Stores</h2>
                 <p>Check out the entire catalog of stores currently stored in Couchbase.</p>
             </div>
+            {loading && <Spinner />}
             <div className="d-flex flex-wrap">
                 {stores.map((store, index) => {
                     if (index === stores.length - 1) {
