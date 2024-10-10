@@ -88,4 +88,4 @@ Console.WriteLine("Loading demo stock...");
 await StockLoader.Load(stockCollection, maxItems: 15, maxStores: 6);
 Console.WriteLine("Done loading demo stock.");
 
-// TODO: create vector index?
+// TODO: create vector index/geospatial index?
