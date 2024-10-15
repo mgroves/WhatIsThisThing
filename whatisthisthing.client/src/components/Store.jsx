@@ -59,7 +59,7 @@ const Store = forwardRef(({ store = {} }, ref) => {
         return `https://static-maps.yandex.ru/1.x/?ll=${longitude},${latitude}&z=15&l=map&size=450,450&pt=${longitude},${latitude},pm2rdm`;
     };
 
-    const imageUrl = getWikimediaUrl(latitude, longitude)
+    const imageUrl = getUrlCartoDb(latitude, longitude)
 
     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
 

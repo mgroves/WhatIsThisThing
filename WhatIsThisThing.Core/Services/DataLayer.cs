@@ -77,7 +77,7 @@ public class DataLayer : IDataLayer
               {{
                 ""fields"": [""*""],
                 ""query"": {{
-                  ""match_none"": """"
+                  ""match_none"": {{}}
                 }},
                 ""knn"": [
                   {{

@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.2" />
-    <PackageReference Include="CouchbaseNetClient" Version="3.6.2" />
+    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.3" />
+    <PackageReference Include="CouchbaseNetClient" Version="3.6.3" />
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
