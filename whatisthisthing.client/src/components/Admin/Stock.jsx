@@ -221,7 +221,7 @@ const Stock = ({ currentPage, setCurrentPage }) => {
                     />
                 </div>
                 <div className="col-12 text-center">
-                    <button type="submit" className="btn btn-primary mt-2" disabled={loading}>Create Stock</button>
+                    <button type="submit" className="btn btn-primary mt-2" disabled={loading}>Update Stock</button>
                 </div>
             </form>
 
