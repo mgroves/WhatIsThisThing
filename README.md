@@ -7,9 +7,9 @@
 ## Projects
 
 - **WhatIsThisThing.Server**: The main ASP.NET Core application backend with API endpoints like Identify and Browse.
-- **WhatIsThisThing.Loader**: Populates Couchbase with sample data, including vector embeddings from Azure Computer Vision.
+- **WhatIsThisThing.Loader**: Populates Couchbase with sample data, including vector embeddings from Azure Computer Vision. (This is optional: you can add things via the Admin UI if you have access and/or are running the demo locally).
 - **WhatIsThisThing.Core**: Contains common services and shared configuration.
-- **whatisthisthing.client**: The React frontend for the application.
+- **whatisthisthing.client**: The React frontend for the application. (Written by someone who definitely doesn't have React experience).
 
 ## Configuration
 
@@ -51,7 +51,7 @@ There is an `appsettings.Development.json.sample` file included. You can use thi
    ```
 
 2. **Set up Couchbase**
-   - Install and start Couchbase Server.
+   - Create [Capella account and cluster (there is a developer free tier!)](https://www.couchbase.com/products/capella/) or download, install and start [Couchbase Server](https://www.couchbase.com/downloads/?family=couchbase-server) locally.
    - Create a bucket named `whatisthis`.
 
 3. **Create the vector search index and geospatial index**
@@ -59,29 +59,35 @@ There is an `appsettings.Development.json.sample` file included. You can use thi
    - Navigate to the "Indexes" tab.
    - Create a new vector search index on the `whatisthis` bucket. (See below for vector index definition)
    - Create a new geospatial index on the `whatisthis` bucket. (See below for geospatial index definition)
+   - ⚠️ **Note:** Search/vector/geospatial indexes can be copy/paste imported: [import with Capella](https://docs.couchbase.com/cloud/search/import-search-index.html) / [import with Server](https://docs.couchbase.com/server/current/search/import-search-index.html)
 
-4. **Configure Azure Computer Vision**
+1. **Configure Azure Computer Vision**
    - Obtain your endpoint and subscription key from the Azure portal.
    - Update `appsettings.json` in the `WhatIsThisThing.Core` project with your Azure Computer Vision credentials.
    - Confirm that you have the [correct permission](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#ai--machine-learning) to use this endpoint.
+   - ⚠️ **Note:** If you want to use a different embedding model, no problem: implement `IEmbeddingService` and update the corresponding `AddTransient` in Program.cs 
 
-5. **Load sample data into Couchbase**
+2. **Load sample data into Couchbase**
+
+   - ⚠️ If you intend to use the Admin UI to add data, you can skip this step.
+
    ```bash
    cd WhatIsThisThing.Loader
    dotnet run
    ```
 
-6. **Build and run the backend (and frontend will also launch via Vite)**
+3. **Build and run the backend (and frontend will also launch via Vite)**
+   
    ```bash
    cd WhatIsThisThing.Server
    dotnet run --launch-profile https
    ```
 
-7. **Access the application**
+4. **Access the application**
    - Navigate to `https://localhost:5173/` to use the frontend.
    - Use `https://localhost:7145` for the backend API.
 
-8. **Create SQL++ indexes** (optional)
+5. **Create SQL++ indexes** (optional)
    - Adding (covering) indexes may help to improve performance.
    - See "Index" section for indexes recommended by Query Advisor.
    - YMMV: better queries/indexes may be possible. This demo is not meant to provide SQL++ writing guideance.
@@ -90,7 +96,8 @@ There is an `appsettings.Development.json.sample` file included. You can use thi
 
 ### What Is This Thing?
 - Upload a picture to identify the item (and other similar-looking items).
-- Get item details including price, description, and nearby stores that have the item in stock.
+- Get item details including price, description, and nearby stores that have the item in stock. If no store near you has the item in stock, it will say "Delivery Only".
+- There are some sample photos of items that you can try to see how well the image model recognizes similar images in the Loader project, `images/slightlydifferent` folder.
 
 ### Browse Page
 - View the entire catalog.
@@ -271,3 +278,12 @@ CREATE INDEX `adv_split_meta_id_1_split_meta_id_0_numInStock` ON `whatisthis`.`_
 ```
 
 </details>
+
+## Public Deployment
+
+There is currently a public deployment of this demo.
+
+> [!WARNING]
+> This demo is running on Capella Free Tier, with Azure Computer Vision free tier (F0), and Basic Azure Web App hosting (B1), with a React front-end written by someone who does not know React that well. It can handle a moderate amount of traffic (I have done some basic [JMeter Testing](whatisthisthing.jmx)). However, if it gets a lot of traffic, it will likely crash. Please don't consider this to be representative of any of the underlying technologies! A true production deployment would use a more robust/paid hosting solution.
+
+That being said, have at it: https://whatisthisthing.azurewebsites.net
