@@ -157,7 +157,7 @@ public class DataLayer : IDataLayer
 
             /* ordering by name for pagination */
 
-            ORDER BY u.name
+            ORDER BY allItems.name
             LIMIT {PAGE_SIZE}
             OFFSET {request.Page * PAGE_SIZE}";
 
