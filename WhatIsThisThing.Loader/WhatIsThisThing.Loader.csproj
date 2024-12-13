@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.3" />
-    <PackageReference Include="CouchbaseNetClient" Version="3.6.3" />
+    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.4" />
+    <PackageReference Include="CouchbaseNetClient" Version="3.6.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />

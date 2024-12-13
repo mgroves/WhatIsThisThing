@@ -5,14 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <SpaRoot>..\whatisthisthing.client</SpaRoot>
-    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
+
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.3" />
-    <PackageReference Include="CouchbaseNetClient" Version="3.6.3" />
+    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.6.4" />
+    <PackageReference Include="CouchbaseNetClient" Version="3.6.4" />
     <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
@@ -29,9 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\whatisthisthing.client\whatisthisthing.client.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+
     <ProjectReference Include="..\WhatIsThisThing.Core\WhatIsThisThing.Core.csproj" />
   </ItemGroup>
 
@@ -39,13 +35,5 @@
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
-	<Target Name="BuildReactApp" BeforeTargets="Build">
-		<Exec Command="npm install" WorkingDirectory="..\whatisthisthing.client" />
-		<Exec Command="npm run build" WorkingDirectory="..\whatisthisthing.client" />
-		<ItemGroup>
-			<ReactBuildFiles Include="..\whatisthisthing.client\dist\**\*.*" />
-		</ItemGroup>
-		<Copy SourceFiles="@(ReactBuildFiles)" DestinationFolder="wwwroot\%(RecursiveDir)" />
-	</Target>
 
 </Project>
