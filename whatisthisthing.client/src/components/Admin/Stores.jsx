@@ -157,6 +157,7 @@ const Stores = ({ currentPage, setCurrentPage }) => {
                         value={newStore.latitude}
                         min="-90"
                         max="90"
+                        step="any"
                         onChange={(e) => setNewStore({ ...newStore, latitude: e.target.value })}
                         required
                     />
@@ -169,6 +170,7 @@ const Stores = ({ currentPage, setCurrentPage }) => {
                         value={newStore.longitude}
                         min="-180"
                         max="180"
+                        step="any"
                         onChange={(e) => setNewStore({ ...newStore, longitude: e.target.value })}
                         required
                     />
